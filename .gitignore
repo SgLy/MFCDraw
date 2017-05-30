@@ -3,6 +3,8 @@
 .vs
 Debug
 ipch
+x64
+*.opendb
 *.aps
 *.db
 *.filters
