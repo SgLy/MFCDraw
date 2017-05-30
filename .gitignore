@@ -1,3 +1,14 @@
+## MFC
+
+.vs
+Debug
+ipch
+*.aps
+*.db
+*.filters
+*.txt
+
+
 # Prerequisites
 *.d
 
