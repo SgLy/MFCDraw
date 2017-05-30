@@ -3,6 +3,22 @@
 
 #pragma once
 
+enum mode_t {
+	DRAW_LINE,
+	DRAW_RECT,
+	DRAW_ELLI
+};
+
+struct option_t {
+	mode_t mode;
+	bool transparent;
+	CPoint st, ed;
+	COLORREF penCol;
+	int penWidth, solidPenWidth, penStyle;
+	COLORREF brushCol;
+	int brushStyle;
+};
+
 class CMFCDrawView : public CView
 {
 protected: // 仅从序列化创建
@@ -49,14 +65,9 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 public:
-	enum { DRAW_LINE, DRAW_RECT, DRAW_ELLI } mode;
-	bool isButtonDown, transparent;
-	CPoint st, ed;
-	COLORREF penCol;
-	int penWidth, solidPenWidth, penStyle;
-	CPen * p0, * p1;
-	COLORREF brushCol;
-	int brushStyle;
+	option_t option;
+	bool isButtonDown;
+	CPen * p0, *p1;
 	CBrush * b0;
 
 public:
