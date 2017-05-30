@@ -15,6 +15,8 @@
 
 #include "PenWidthDlg.h"
 
+#include "Socket.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -78,6 +80,8 @@ END_MESSAGE_MAP()
 
 #define HS_FILL 6
 
+Socket * c_sock;
+
 CMFCDrawView::CMFCDrawView()
 {
 	isButtonDown = false;
@@ -92,6 +96,13 @@ CMFCDrawView::CMFCDrawView()
 	option.transparent = false;
 	option.brushCol = RGB(128, 128, 255);
 	b0 = new CBrush(option.brushCol);
+
+	AfxSocketInit();
+
+	c_sock = new Socket();
+	c_sock->Create();
+
+	c_sock->Connect(L"localhost", 64190);
 
 	option.mode = DRAW_LINE;
 }
@@ -180,6 +191,8 @@ void CMFCDrawView::pickReal(CDC * p)
 
 void CMFCDrawView::realDraw(CDC * p, const CPoint &st, const CPoint &ed)
 {
+	c_sock->Send(&option, sizeof(option), 0);
+
 	if (option.mode == DRAW_LINE) {
 		p->MoveTo(st);
 		p->LineTo(ed);
@@ -187,6 +200,7 @@ void CMFCDrawView::realDraw(CDC * p, const CPoint &st, const CPoint &ed)
 		p->Rectangle(CRect(st, ed));
 	else if (option.mode == DRAW_ELLI)
 		p->Ellipse(CRect(st, ed));
+
 }
 
 void CMFCDrawView::OnLButtonDown(UINT nFlags, CPoint point)
