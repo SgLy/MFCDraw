@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ Éú³ÉµÄ°üº¬ÎÄ¼þ¡£
-// ¹© MFCDraw.rc Ê¹ÓÃ
+// Microsoft Visual C++ ï¿½ï¿½ÉµÄ°ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
+// ï¿½ï¿½ MFCDraw.rc Ê¹ï¿½ï¿½
 //
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
@@ -41,6 +41,11 @@
 #define ID_PENCIL                       32821
 #define ID_LINE_PEN                     32822
 #define ID_BUTTON32823                  32823
+#define ID_32820                        32824
+#define ID_32821                        32825
+#define ID_MENU_NET_SERV                32826
+#define ID_MENU_NET_CLIENT              32827
+#define ID_MENU_NET_SERVER              32828
 #define ID_MENU_BRUSH_HORIZONTAL        33798
 #define ID_MENU_BRUSH_VERTICAL          33799
 #define ID_MENU_BRUSH_FDIAGONAL         33800
@@ -58,6 +63,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        317
 #define _APS_NEXT_COMMAND_VALUE         32824
+#define _APS_NEXT_COMMAND_VALUE         32829
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

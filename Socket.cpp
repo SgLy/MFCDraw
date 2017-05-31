@@ -93,3 +93,29 @@ void Socket::OnReceive(int nErrorCode)
 		father->OnReceive();
 	CAsyncSocket::OnReceive(nErrorCode);
 }
+
+
+void Socket::OnAccept(int nErrorCode)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (nErrorCode == 0)
+		father->OnAccept();
+	CAsyncSocket::OnAccept(nErrorCode);
+}
+
+
+
+void Socket::OnClose(int nErrorCode)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	AfxMessageBox(L"close");
+	CAsyncSocket::OnClose(nErrorCode);
+}
+
+
+void Socket::OnSend(int nErrorCode)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	AfxMessageBox(L"send");
+	CAsyncSocket::OnSend(nErrorCode);
+}

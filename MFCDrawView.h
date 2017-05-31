@@ -1,4 +1,4 @@
-// MFCDrawView.h : CMFCDrawView ÀàµÄ½Ó¿Ú
+// MFCDrawView.h : CMFCDrawView ç±»çš„æ¥å£
 //
 
 #pragma once
@@ -9,6 +9,9 @@ enum mode_t {
 	DRAW_ELLI,
 	DRAW_PEN
 };
+
+enum draw_mode_t { DRAW_XOR, DRAW_COPY };
+enum draw_net_t { DRAW_SEND, DRAW_RECV, DRAW_NULL };
 
 struct option_t {
 	mode_t mode;
@@ -22,32 +25,31 @@ struct option_t {
 
 class CMFCDrawView : public CView
 {
-protected: // ½ö´ÓĞòÁĞ»¯´´½¨
+protected: // ä»…ä»åºåˆ—åŒ–åˆ›å»º
 	CMFCDrawView();
 	DECLARE_DYNCREATE(CMFCDrawView)
 
-	// ÌØĞÔ
+	// ç‰¹æ€§
 public:
 	CMFCDrawDoc* GetDocument() const;
 
-	// ²Ù×÷
+	// æ“ä½œ
 public:
-	void pickEmpty(CDC * p);
-	void pickReal(CDC * p);
-	void realDraw(CDC * p, const CPoint &st, const CPoint &ed);
+	void Draw(draw_mode_t mode, draw_net_t net);
 	void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed);
 	void OnReceive();
+	void OnAccept();
 
-	// ÖØĞ´
+	// é‡å†™
 public:
-	virtual void OnDraw(CDC* pDC);  // ÖØĞ´ÒÔ»æÖÆ¸ÃÊÓÍ¼
+	virtual void OnDraw(CDC* pDC);  // é‡å†™ä»¥ç»˜åˆ¶è¯¥è§†å›¾
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
-	// ÊµÏÖ
+	// å®ç°
 public:
 	virtual ~CMFCDrawView();
 #ifdef _DEBUG
@@ -57,7 +59,7 @@ public:
 
 protected:
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
@@ -114,9 +116,11 @@ public:
 	afx_msg void OnMenuPenWidth();
 	afx_msg void OnLinePen();
 	afx_msg void OnUpdateLinePen(CCmdUI *pCmdUI);
+	afx_msg void OnMenuNetServer();
+	afx_msg void OnMenuNetClient();
 };
 
-#ifndef _DEBUG  // MFCDrawView.cpp ÖĞµÄµ÷ÊÔ°æ±¾
+#ifndef _DEBUG  // MFCDrawView.cpp ä¸­çš„è°ƒè¯•ç‰ˆæœ¬
 inline CMFCDrawDoc* CMFCDrawView::GetDocument() const
 {
 	return reinterpret_cast<CMFCDrawDoc*>(m_pDocument);
