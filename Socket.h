@@ -1,13 +1,19 @@
 #pragma once
 
 // Socket command target
+#include "MFCDrawDoc.h"
+#include "MFCDrawView.h"
 
 class Socket : public CAsyncSocket
 {
 public:
-	Socket();
+	Socket(CMFCDrawView*);
 	virtual ~Socket();
 	virtual void OnConnect(int nErrorCode);
+private:
+	CMFCDrawView * father;
+public:
+	virtual void OnReceive(int nErrorCode);
 };
 
 

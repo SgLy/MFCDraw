@@ -99,7 +99,7 @@ CMFCDrawView::CMFCDrawView()
 
 	AfxSocketInit();
 
-	c_sock = new Socket();
+	c_sock = new Socket(this);
 	c_sock->Create();
 
 	c_sock->Connect(L"localhost", 64190);
@@ -191,6 +191,8 @@ void CMFCDrawView::pickReal(CDC * p)
 
 void CMFCDrawView::realDraw(CDC * p, const CPoint &st, const CPoint &ed)
 {
+	option.st = st;
+	option.ed = ed;
 	c_sock->Send(&option, sizeof(option), 0);
 
 	if (option.mode == DRAW_LINE) {
@@ -201,6 +203,26 @@ void CMFCDrawView::realDraw(CDC * p, const CPoint &st, const CPoint &ed)
 	else if (option.mode == DRAW_ELLI)
 		p->Ellipse(CRect(st, ed));
 
+}
+
+void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed) {
+	CDC* p = GetDC();
+	CPen* tempp = new CPen(option.penStyle, option.penWidth, option.penCol);
+	p->SelectObject(tempp);
+	if (option.mode == DRAW_LINE) {
+		p->MoveTo(st);
+		p->LineTo(ed);
+	}
+	else if (option.mode == DRAW_RECT)
+		p->Rectangle(CRect(st, ed));
+	else if (option.mode == DRAW_ELLI)
+		p->Ellipse(CRect(st, ed));
+}
+
+void CMFCDrawView::OnReceive() {
+	option_t op;
+	c_sock->Receive(&op, sizeof(op), 0);
+	draw(op, op.st, op.ed);
 }
 
 void CMFCDrawView::OnLButtonDown(UINT nFlags, CPoint point)

@@ -8,7 +8,8 @@
 
 // Socket
 
-Socket::Socket()
+Socket::Socket(CMFCDrawView* f) :
+	father(f)
 {
 }
 
@@ -83,3 +84,12 @@ void Socket::OnConnect(int nErrorCode)
 	CAsyncSocket::OnConnect(nErrorCode);
 }
 
+
+
+void Socket::OnReceive(int nErrorCode)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (nErrorCode == 0) // 无错误，调用对话框的OnReceive函数
+		father->OnReceive();
+	CAsyncSocket::OnReceive(nErrorCode);
+}
