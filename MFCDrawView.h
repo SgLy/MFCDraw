@@ -1,4 +1,4 @@
-// MFCDrawView.h : CMFCDrawView ç±»çš„æ¥å£
+// MFCDrawView.h : CMFCDrawView ÀàµÄ½Ó¿Ú
 //
 
 #pragma once
@@ -25,31 +25,30 @@ struct option_t {
 
 class CMFCDrawView : public CView
 {
-protected: // ä»…ä»åºåˆ—åŒ–åˆ›å»º
+protected: // ½ö´ÓĞòÁĞ»¯´´½¨
 	CMFCDrawView();
 	DECLARE_DYNCREATE(CMFCDrawView)
 
-	// ç‰¹æ€§
+	// ÌØĞÔ
 public:
 	CMFCDrawDoc* GetDocument() const;
 
-	// æ“ä½œ
+	// ²Ù×÷
 public:
 	void Draw(draw_mode_t mode, draw_net_t net);
-	void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed);
 	void OnReceive();
 	void OnAccept();
 
-	// é‡å†™
+	// ÖØĞ´
 public:
-	virtual void OnDraw(CDC* pDC);  // é‡å†™ä»¥ç»˜åˆ¶è¯¥è§†å›¾
+	virtual void OnDraw(CDC* pDC);  // ÖØĞ´ÒÔ»æÖÆ¸ÃÊÓÍ¼
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
-	// å®ç°
+	// ÊµÏÖ
 public:
 	virtual ~CMFCDrawView();
 #ifdef _DEBUG
@@ -59,7 +58,7 @@ public:
 
 protected:
 
-	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
+	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
@@ -120,7 +119,7 @@ public:
 	afx_msg void OnMenuNetClient();
 };
 
-#ifndef _DEBUG  // MFCDrawView.cpp ä¸­çš„è°ƒè¯•ç‰ˆæœ¬
+#ifndef _DEBUG  // MFCDrawView.cpp ÖĞµÄµ÷ÊÔ°æ±¾
 inline CMFCDrawDoc* CMFCDrawView::GetDocument() const
 {
 	return reinterpret_cast<CMFCDrawDoc*>(m_pDocument);
