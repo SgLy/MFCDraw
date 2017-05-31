@@ -80,6 +80,12 @@ END_MESSAGE_MAP()
 
 #define HS_FILL 6
 
+#define DRAW_XOR true
+#define DRAW_COPY false
+
+#define DRAW_SEND true
+#define DRAW_RECV false
+
 Socket * c_sock;
 
 CMFCDrawView::CMFCDrawView()
@@ -89,13 +95,10 @@ CMFCDrawView::CMFCDrawView()
 	option.penCol = RGB(0, 0, 128);
 	option.penWidth = option.solidPenWidth = 5;
 	option.penStyle = PS_SOLID;
-	p0 = new CPen(PS_DOT, 0, RGB(128, 128, 128));
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 
 	option.brushStyle = HS_FILL;
 	option.transparent = false;
 	option.brushCol = RGB(128, 128, 255);
-	b0 = new CBrush(option.brushCol);
 
 	AfxSocketInit();
 
@@ -174,35 +177,57 @@ CMFCDrawDoc* CMFCDrawView::GetDocument() const // 非调试版本是内联的
 
 // CMFCDrawView 消息处理程序
 
-void CMFCDrawView::pickEmpty(CDC * p)
-{
-	p->SelectObject(p0);
-	p->SelectStockObject(NULL_BRUSH);
-	p->SetROP2(R2_XORPEN);
-	p->SetBkMode(TRANSPARENT);
-}
 
-void CMFCDrawView::pickReal(CDC * p)
+void CMFCDrawView::Draw(bool xor, bool send)
 {
-	p->SelectObject(p1);
-	p->SelectObject(b0);
-	p->SetROP2(R2_COPYPEN);
-}
+	if (DRAW_SEND == send)
+		c_sock->Send(&option, sizeof(option), 0);
+	else
+		c_sock->Receive(&option, sizeof(option), 0);
 
-void CMFCDrawView::realDraw(CDC * p, const CPoint &st, const CPoint &ed)
-{
-	option.st = st;
-	option.ed = ed;
-	c_sock->Send(&option, sizeof(option), 0);
+
+	CDC * p = GetDC();
+
+	// Set pen
+	p0 = new CPen(PS_DOT, 0, RGB(128, 128, 128));
+	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
+
+	// Set brushes
+	if (option.transparent)
+		b0 = new CBrush();
+	else {
+		if (option.brushStyle == HS_FILL)
+			b0 = new CBrush(option.brushCol);
+		else
+			b0 = new CBrush(option.brushStyle, option.brushCol);
+	}
+
+	// Pick corresponding pen and brush
+	if (DRAW_XOR == xor) {
+		p->SelectObject(p0);
+		p->SelectStockObject(NULL_BRUSH);
+		p->SetROP2(R2_XORPEN);
+		p->SetBkMode(TRANSPARENT);
+	}
+	else {
+		p->SelectObject(p1);
+		p->SelectObject(b0);
+		p->SetROP2(R2_COPYPEN);
+	}
+
 
 	if (option.mode == DRAW_LINE) {
-		p->MoveTo(st);
-		p->LineTo(ed);
+		p->MoveTo(option.st);
+		p->LineTo(option.ed);
 	} else if (option.mode == DRAW_RECT)
-		p->Rectangle(CRect(st, ed));
+		p->Rectangle(CRect(option.st, option.ed));
 	else if (option.mode == DRAW_ELLI)
-		p->Ellipse(CRect(st, ed));
+		p->Ellipse(CRect(option.st, option.ed));
 
+	// Release resources
+	delete p0;
+	delete p1;
+	delete b0;
 }
 
 void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed) {
@@ -220,9 +245,7 @@ void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed) {
 }
 
 void CMFCDrawView::OnReceive() {
-	option_t op;
-	c_sock->Receive(&op, sizeof(op), 0);
-	draw(op, op.st, op.ed);
+	Draw(DRAW_COPY, DRAW_RECV);
 }
 
 void CMFCDrawView::OnLButtonDown(UINT nFlags, CPoint point)
@@ -245,13 +268,11 @@ void CMFCDrawView::OnLButtonUp(UINT nFlags, CPoint point)
 		CDC * pDC = GetDC();
 
 		// Erase former
-		pickEmpty(pDC);
-		realDraw(pDC, option.st, option.ed);
+		Draw(DRAW_XOR, DRAW_SEND);
 
 		// Draw final
 		option.ed = point;
-		pickReal(pDC);
-		realDraw(pDC, option.st, option.ed);
+		Draw(DRAW_COPY, DRAW_SEND);
 
 		ReleaseDC(pDC);
 		isButtonDown = false;
@@ -279,10 +300,9 @@ void CMFCDrawView::OnMouseMove(UINT nFlags, CPoint point)
 	buf.Format(L"指针位置: (%d, %d)", point.x, point.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->cursor, buf);
 	if (isButtonDown) {
-		pickEmpty(pDC);
-		realDraw(pDC, option.st, option.ed);
+		Draw(DRAW_XOR, DRAW_SEND);
 		option.ed = point;
-		realDraw(pDC, option.st, option.ed);
+		Draw(DRAW_XOR, DRAW_SEND);
 
 		buf.Format(L"大小: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
 		pFrmWnd->setStatusBarVal(pFrmWnd->size, buf);
@@ -297,8 +317,7 @@ void CMFCDrawView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == 27 && isButtonDown) {
 		CDC * pDC = GetDC();
-		pickEmpty(pDC);
-		realDraw(pDC, option.st, option.ed);
+		Draw(DRAW_XOR, DRAW_SEND);
 		ReleaseDC(pDC);
 		isButtonDown = false;
 		
@@ -344,17 +363,13 @@ void CMFCDrawView::OnMenuLineColor()
 	CColorDialog colDlg(option.penCol, CC_FULLOPEN);
 	if (colDlg.DoModal() == IDOK) {
 		option.penCol = colDlg.GetColor();
-		delete p1;
-		p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 	}
 }
 
 void CMFCDrawView::OnMenuLineSolid()
 {
 	option.penStyle = PS_SOLID;
-	delete p1;
 	option.penWidth = option.solidPenWidth;
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 }
 void CMFCDrawView::OnUpdateMenuLineSolid(CCmdUI *pCmdUI)
 {
@@ -367,8 +382,6 @@ void CMFCDrawView::OnMenuLineDash()
 		option.solidPenWidth = option.penWidth;
 	option.penStyle = PS_DASH;
 	option.penWidth = 1;
-	delete p1;
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 }
 void CMFCDrawView::OnUpdateMenuLineDash(CCmdUI *pCmdUI)
 {
@@ -380,8 +393,6 @@ void CMFCDrawView::OnMenuLineDot()
 		option.solidPenWidth = option.penWidth;
 	option.penStyle = PS_DOT;
 	option.penWidth = 1;
-	delete p1;
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 }
 void CMFCDrawView::OnUpdateMenuLineDot(CCmdUI *pCmdUI)
 {
@@ -393,8 +404,6 @@ void CMFCDrawView::OnMenuLineDashdot()
 		option.solidPenWidth = option.penWidth;
 	option.penStyle = PS_DASHDOT;
 	option.penWidth = 1;
-	delete p1;
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 }
 void CMFCDrawView::OnUpdateMenuLineDashdot(CCmdUI *pCmdUI)
 {
@@ -406,8 +415,6 @@ void CMFCDrawView::OnMenuLineDashdotdot()
 		option.solidPenWidth = option.penWidth;
 	option.penStyle = PS_DASHDOTDOT;
 	option.penWidth = 1;
-	delete p1;
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 }
 void CMFCDrawView::OnUpdateMenuLineDashdotdot(CCmdUI *pCmdUI)
 {
@@ -419,8 +426,6 @@ void CMFCDrawView::OnMenuLineNull()
 		option.solidPenWidth = option.penWidth;
 	option.penStyle = PS_NULL;
 	option.penWidth = 1;
-	delete p1;
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 }
 void CMFCDrawView::OnUpdateMenuLineNull(CCmdUI *pCmdUI)
 {
@@ -432,13 +437,6 @@ void CMFCDrawView::OnMenuBrushColor()
 	CColorDialog colDlg(option.brushCol, CC_FULLOPEN);
 	if (colDlg.DoModal() == IDOK) {
 		option.brushCol = colDlg.GetColor();
-		if (option.transparent)
-			return;
-		delete b0;
-		if (option.brushStyle == HS_FILL)
-			b0 = new CBrush(option.brushCol);
-		else
-			b0 = new CBrush(option.brushStyle, option.brushCol);
 	}
 }
 
@@ -447,14 +445,6 @@ void CMFCDrawView::OnMenuBrushTransparent()
 {
 	option.transparent = !option.transparent;
 	option.brushStyle = -1;
-	if (option.transparent)
-		b0 = new CBrush();
-	else {
-		if (option.brushStyle == HS_FILL)
-			b0 = new CBrush(option.brushCol);
-		else
-			b0 = new CBrush(option.brushStyle, option.brushCol);
-	}
 }
 
 
@@ -468,19 +458,16 @@ void CMFCDrawView::OnMenuBrushHorizontal()
 {
 	option.brushStyle = HS_HORIZONTAL;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushStyle, option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushHorizontal(CCmdUI *pCmdUI)
 {
 	pCmdUI->SetCheck(option.brushStyle == HS_HORIZONTAL);
 }
+
 void CMFCDrawView::OnMenuBrushVertical()
 {
 	option.brushStyle = HS_VERTICAL;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushStyle, option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushVertical(CCmdUI *pCmdUI)
 {
@@ -490,8 +477,6 @@ void CMFCDrawView::OnMenuBrushFdiagonal()
 {
 	option.brushStyle = HS_FDIAGONAL;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushStyle, option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushFdiagonal(CCmdUI *pCmdUI)
 {
@@ -501,8 +486,6 @@ void CMFCDrawView::OnMenuBrushBdiagonal()
 {
 	option.brushStyle = HS_BDIAGONAL;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushStyle, option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushBdiagonal(CCmdUI *pCmdUI)
 {
@@ -512,8 +495,6 @@ void CMFCDrawView::OnMenuBrushCross()
 {
 	option.brushStyle = HS_CROSS;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushStyle, option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushCross(CCmdUI *pCmdUI)
 {
@@ -523,8 +504,6 @@ void CMFCDrawView::OnMenuBrushDiagcross()
 {
 	option.brushStyle = HS_DIAGCROSS;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushStyle, option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushDiagcross(CCmdUI *pCmdUI)
 {
@@ -534,8 +513,6 @@ void CMFCDrawView::OnMenuBrushFill()
 {
 	option.brushStyle = HS_FILL;
 	option.transparent = false;
-	delete b0;
-	b0 = new CBrush(option.brushCol);
 }
 void CMFCDrawView::OnUpdateMenuBrushFill(CCmdUI *pCmdUI)
 {
@@ -559,7 +536,5 @@ void CMFCDrawView::OnMenuPenWidth()
 		dlg.maxPenWidth = 1;
 	if (dlg.DoModal() == IDOK) {
 		option.penWidth = dlg.penWidth_dlg;
-		delete p1;
-		p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 	}
 }

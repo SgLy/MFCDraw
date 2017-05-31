@@ -31,9 +31,7 @@ public:
 
 	// ²Ù×÷
 public:
-	void pickEmpty(CDC * p);
-	void pickReal(CDC * p);
-	void realDraw(CDC * p, const CPoint &st, const CPoint &ed);
+	void Draw(bool xor, bool send);
 	void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed);
 	void OnReceive();
 
