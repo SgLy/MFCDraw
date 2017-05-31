@@ -17,7 +17,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (Simplified, PRC) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -204,7 +204,7 @@ BEGIN
             MENUITEM "反斜线(&3)",                     ID_MENU_BRUSH_BDIAGONAL
             MENUITEM "十字线(&4)",                     ID_MENU_BRUSH_CROSS
             MENUITEM "斜十字线(&5)",                    ID_MENU_BRUSH_DIAGCROSS
-            MENUITEM "填充(&6)",                      ID_MENU_BRUSH_FDIAGONAL
+            MENUITEM "填充(&6)",                      ID_MENU_BRUSH_FILL
         END
     END
     POPUP "帮助(&H)"
@@ -469,7 +469,48 @@ BEGIN
     AFX_IDS_PREVIEW_CLOSE   "关闭打印预览模式\n取消预览"
 END
 
-#endif    // Chinese (Simplified, PRC) resources
+STRINGTABLE
+BEGIN
+    ID_MENU_DRAW_LINE       "绘制直线\n直线"
+    ID_MENU_DRAW_RECT       "绘制矩形\n矩形"
+    ID_MENU_DRAW_ELLI       "绘制椭圆\n椭圆"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENU_DRAW_CLEAR      "清屏\n清屏"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENU_LINE_COLOR      "设置线条颜色\n线条颜色"
+    ID_MENU_LINE_SOLID      "线条样式：实心\n实心"
+    ID_MENU_LINE_DASH       "线条样式：虚线\n虚线"
+    ID_MENU_LINE_DOT        "线条样式：点线\n点线"
+    ID_MENU_LINE_DASHDOT    "线条样式：虚点线\n虚点线"
+    ID_MENU_LINE_DASHDOTDOT "线条样式：虚点点线\n虚点点线"
+    ID_MENU_LINE_NULL       "线条样式：空笔\n空笔"
+    ID_MENU_BRUSH_COLOR     "设置笔刷颜色\n笔刷颜色"
+    ID_MENU_BRUSH_TRANSPARENT "设置笔刷为透明\n透明"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENU_LINE_WIDTH      "设置线条宽度\n线条宽度"
+END
+
+STRINGTABLE
+BEGIN
+    ID_MENU_BRUSH_HORIZONTAL "笔刷样式：水平线\n水平线"
+    ID_MENU_BRUSH_VERTICAL  "笔刷样式：垂直线\n垂直线"
+    ID_MENU_BRUSH_FDIAGONAL "笔刷样式：正斜线\n正斜线"
+    ID_MENU_BRUSH_FILL      "笔刷样式：填充\n填充"
+    ID_MENU_BRUSH_BDIAGONAL "笔刷样式：反斜线\n反斜线"
+    ID_MENU_BRUSH_CROSS     "笔刷样式：十字线\n十字线"
+    ID_MENU_BRUSH_DIAGCROSS "笔刷样式：斜十字线\n斜十字线"
+END
+
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
