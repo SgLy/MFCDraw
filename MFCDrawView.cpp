@@ -74,6 +74,8 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENU_BRUSH_FILL, &CMFCDrawView::OnUpdateMenuBrushFill)
 	ON_COMMAND(ID_MENU_DRAW_CLEAR, &CMFCDrawView::OnMenuDrawClear)
 	ON_COMMAND(ID_MENU_LINE_WIDTH, &CMFCDrawView::OnMenuPenWidth)
+	ON_COMMAND(ID_LINE_PEN, &CMFCDrawView::OnLinePen)
+	ON_UPDATE_COMMAND_UI(ID_LINE_PEN, &CMFCDrawView::OnUpdateLinePen)
 END_MESSAGE_MAP()
 
 // CMFCDrawView 构造/析构
@@ -198,10 +200,15 @@ void CMFCDrawView::realDraw(CDC * p, const CPoint &st, const CPoint &ed)
 	if (option.mode == DRAW_LINE) {
 		p->MoveTo(st);
 		p->LineTo(ed);
-	} else if (option.mode == DRAW_RECT)
+	}
+	else if (option.mode == DRAW_RECT)
 		p->Rectangle(CRect(st, ed));
 	else if (option.mode == DRAW_ELLI)
 		p->Ellipse(CRect(st, ed));
+	else if (option.mode == DRAW_PEN) {
+		p->MoveTo(st);
+		p->LineTo(ed);
+	}
 
 }
 
@@ -279,10 +286,18 @@ void CMFCDrawView::OnMouseMove(UINT nFlags, CPoint point)
 	buf.Format(L"指针位置: (%d, %d)", point.x, point.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->cursor, buf);
 	if (isButtonDown) {
-		pickEmpty(pDC);
-		realDraw(pDC, option.st, option.ed);
-		option.ed = point;
-		realDraw(pDC, option.st, option.ed);
+		if (option.mode != DRAW_PEN) {
+			pickEmpty(pDC);
+			realDraw(pDC, option.st, option.ed);
+			option.ed = point;
+			realDraw(pDC, option.st, option.ed);
+		}
+		else {
+			pickReal(pDC);
+			option.st = option.ed;
+			option.ed = point;
+			realDraw(pDC, option.st, option.ed);
+		}
 
 		buf.Format(L"大小: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
 		pFrmWnd->setStatusBarVal(pFrmWnd->size, buf);
@@ -562,4 +577,18 @@ void CMFCDrawView::OnMenuPenWidth()
 		delete p1;
 		p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
 	}
+}
+
+
+void CMFCDrawView::OnLinePen()
+{
+	// TODO: 在此添加命令处理程序代码
+	option.mode = DRAW_PEN;
+}
+
+
+void CMFCDrawView::OnUpdateLinePen(CCmdUI *pCmdUI)
+{
+	// TODO: 在此添加命令更新用户界面处理程序代码
+	pCmdUI->SetCheck(option.mode == DRAW_PEN);
 }

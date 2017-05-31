@@ -6,7 +6,8 @@
 enum mode_t {
 	DRAW_LINE,
 	DRAW_RECT,
-	DRAW_ELLI
+	DRAW_ELLI,
+	DRAW_PEN
 };
 
 struct option_t {
@@ -111,6 +112,8 @@ public:
 	afx_msg void OnUpdateMenuBrushFill(CCmdUI *pCmdUI);
 	afx_msg void OnMenuDrawClear();
 	afx_msg void OnMenuPenWidth();
+	afx_msg void OnLinePen();
+	afx_msg void OnUpdateLinePen(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // MFCDrawView.cpp 中的调试版本
