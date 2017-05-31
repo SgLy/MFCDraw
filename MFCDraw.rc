@@ -17,7 +17,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(简体，中国) resources
+// Chinese (Simplified, PRC) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -206,6 +206,11 @@ BEGIN
             MENUITEM "斜十字线(&5)",                    ID_MENU_BRUSH_DIAGCROSS
             MENUITEM "填充(&6)",                      ID_MENU_BRUSH_FILL
         END
+    END
+    POPUP "网络(&N)"
+    BEGIN
+        MENUITEM "打开服务端(&S)",                   ID_MENU_NET_SERVER
+        MENUITEM "打开客户端(&C)",                   ID_MENU_NET_CLIENT
     END
     POPUP "帮助(&H)"
     BEGIN
@@ -510,7 +515,7 @@ BEGIN
     ID_MENU_BRUSH_DIAGCROSS "笔刷样式：斜十字线\n斜十字线"
 END
 
-#endif    // 中文(简体，中国) resources
+#endif    // Chinese (Simplified, PRC) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

@@ -9,6 +9,9 @@ enum mode_t {
 	DRAW_ELLI
 };
 
+enum draw_mode_t { DRAW_XOR, DRAW_COPY };
+enum draw_net_t { DRAW_SEND, DRAW_RECV, DRAW_NULL };
+
 struct option_t {
 	mode_t mode;
 	bool transparent;
@@ -31,9 +34,10 @@ public:
 
 	// 操作
 public:
-	void Draw(bool xor, bool send);
+	void Draw(draw_mode_t mode, draw_net_t net);
 	void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed);
 	void OnReceive();
+	void OnAccept();
 
 	// 重写
 public:
@@ -109,6 +113,8 @@ public:
 	afx_msg void OnUpdateMenuBrushFill(CCmdUI *pCmdUI);
 	afx_msg void OnMenuDrawClear();
 	afx_msg void OnMenuPenWidth();
+	afx_msg void OnMenuNetServer();
+	afx_msg void OnMenuNetClient();
 };
 
 #ifndef _DEBUG  // MFCDrawView.cpp 中的调试版本

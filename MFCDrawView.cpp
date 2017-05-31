@@ -74,19 +74,15 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENU_BRUSH_FILL, &CMFCDrawView::OnUpdateMenuBrushFill)
 	ON_COMMAND(ID_MENU_DRAW_CLEAR, &CMFCDrawView::OnMenuDrawClear)
 	ON_COMMAND(ID_MENU_LINE_WIDTH, &CMFCDrawView::OnMenuPenWidth)
+	ON_COMMAND(ID_MENU_NET_SERVER, &CMFCDrawView::OnMenuNetServer)
+	ON_COMMAND(ID_MENU_NET_CLIENT, &CMFCDrawView::OnMenuNetClient)
 END_MESSAGE_MAP()
 
 // CMFCDrawView 构造/析构
 
 #define HS_FILL 6
 
-#define DRAW_XOR true
-#define DRAW_COPY false
-
-#define DRAW_SEND true
-#define DRAW_RECV false
-
-Socket * c_sock;
+Socket * c_sock, * s_list_sock, * s_sock;
 
 CMFCDrawView::CMFCDrawView()
 {
@@ -101,11 +97,6 @@ CMFCDrawView::CMFCDrawView()
 	option.brushCol = RGB(128, 128, 255);
 
 	AfxSocketInit();
-
-	c_sock = new Socket(this);
-	c_sock->Create();
-
-	c_sock->Connect(L"localhost", 64190);
 
 	option.mode = DRAW_LINE;
 }
@@ -178,70 +169,62 @@ CMFCDrawDoc* CMFCDrawView::GetDocument() const // 非调试版本是内联的
 // CMFCDrawView 消息处理程序
 
 
-void CMFCDrawView::Draw(bool xor, bool send)
+void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 {
-	if (DRAW_SEND == send)
-		c_sock->Send(&option, sizeof(option), 0);
-	else
-		c_sock->Receive(&option, sizeof(option), 0);
-
+	option_t op = option;
+	if (DRAW_SEND == net) {
+		if (c_sock)
+			c_sock->Send(&option, sizeof(option), 0);
+	}
+	else if (DRAW_RECV == net) {
+		if (s_sock)
+			s_sock->Receive(&op, sizeof(op), 0);
+	}
 
 	CDC * p = GetDC();
 
 	// Set pen
 	p0 = new CPen(PS_DOT, 0, RGB(128, 128, 128));
-	p1 = new CPen(option.penStyle, option.penWidth, option.penCol);
+	p1 = new CPen(op.penStyle, op.penWidth, op.penCol);
 
 	// Set brushes
-	if (option.transparent)
+	if (op.transparent)
 		b0 = new CBrush();
 	else {
-		if (option.brushStyle == HS_FILL)
-			b0 = new CBrush(option.brushCol);
+		if (op.brushStyle == HS_FILL)
+			b0 = new CBrush(op.brushCol);
 		else
-			b0 = new CBrush(option.brushStyle, option.brushCol);
+			b0 = new CBrush(op.brushStyle, op.brushCol);
 	}
 
 	// Pick corresponding pen and brush
-	if (DRAW_XOR == xor) {
+	if (DRAW_XOR == mode) {
 		p->SelectObject(p0);
 		p->SelectStockObject(NULL_BRUSH);
 		p->SetROP2(R2_XORPEN);
 		p->SetBkMode(TRANSPARENT);
 	}
-	else {
+	else if (DRAW_COPY == mode) {
 		p->SelectObject(p1);
 		p->SelectObject(b0);
 		p->SetROP2(R2_COPYPEN);
 	}
 
 
-	if (option.mode == DRAW_LINE) {
-		p->MoveTo(option.st);
-		p->LineTo(option.ed);
-	} else if (option.mode == DRAW_RECT)
-		p->Rectangle(CRect(option.st, option.ed));
-	else if (option.mode == DRAW_ELLI)
-		p->Ellipse(CRect(option.st, option.ed));
+	if (op.mode == DRAW_LINE) {
+		p->MoveTo(op.st);
+		p->LineTo(op.ed);
+	}
+	else if (op.mode == DRAW_RECT)
+		p->Rectangle(CRect(op.st, op.ed));
+	else if (op.mode == DRAW_ELLI)
+		p->Ellipse(CRect(op.st, op.ed));
 
 	// Release resources
 	delete p0;
 	delete p1;
 	delete b0;
-}
 
-void CMFCDrawView::draw(option_t option, const CPoint &st, const CPoint &ed) {
-	CDC* p = GetDC();
-	CPen* tempp = new CPen(option.penStyle, option.penWidth, option.penCol);
-	p->SelectObject(tempp);
-	if (option.mode == DRAW_LINE) {
-		p->MoveTo(st);
-		p->LineTo(ed);
-	}
-	else if (option.mode == DRAW_RECT)
-		p->Rectangle(CRect(st, ed));
-	else if (option.mode == DRAW_ELLI)
-		p->Ellipse(CRect(st, ed));
 }
 
 void CMFCDrawView::OnReceive() {
@@ -268,7 +251,7 @@ void CMFCDrawView::OnLButtonUp(UINT nFlags, CPoint point)
 		CDC * pDC = GetDC();
 
 		// Erase former
-		Draw(DRAW_XOR, DRAW_SEND);
+		Draw(DRAW_XOR, DRAW_NULL);
 
 		// Draw final
 		option.ed = point;
@@ -300,9 +283,9 @@ void CMFCDrawView::OnMouseMove(UINT nFlags, CPoint point)
 	buf.Format(L"指针位置: (%d, %d)", point.x, point.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->cursor, buf);
 	if (isButtonDown) {
-		Draw(DRAW_XOR, DRAW_SEND);
+		Draw(DRAW_XOR, DRAW_NULL);
 		option.ed = point;
-		Draw(DRAW_XOR, DRAW_SEND);
+		Draw(DRAW_XOR, DRAW_NULL);
 
 		buf.Format(L"大小: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
 		pFrmWnd->setStatusBarVal(pFrmWnd->size, buf);
@@ -537,4 +520,25 @@ void CMFCDrawView::OnMenuPenWidth()
 	if (dlg.DoModal() == IDOK) {
 		option.penWidth = dlg.penWidth_dlg;
 	}
+}
+
+
+void CMFCDrawView::OnMenuNetServer()
+{
+	s_list_sock = new Socket(this);
+	s_list_sock->Create(64190);
+	s_list_sock->Listen();
+}
+
+void CMFCDrawView::OnMenuNetClient()
+{
+	c_sock = new Socket(this);
+	c_sock->Create();
+	c_sock->Connect(L"localhost", 64190);
+}
+
+void CMFCDrawView::OnAccept()
+{
+	s_sock = new Socket(this);
+	s_list_sock->Accept(*s_sock);
 }

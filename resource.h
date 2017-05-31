@@ -37,6 +37,11 @@
 #define ID_MENU_DRAW_CLEAR              32815
 #define ID_32817                        32817
 #define ID_MENU_LINE_WIDTH              32818
+#define ID_32820                        32820
+#define ID_32821                        32821
+#define ID_MENU_NET_SERV                32822
+#define ID_MENU_NET_CLIENT              32823
+#define ID_MENU_NET_SERVER              32824
 #define ID_MENU_BRUSH_HORIZONTAL        33798
 #define ID_MENU_BRUSH_VERTICAL          33799
 #define ID_MENU_BRUSH_FDIAGONAL         33800
@@ -53,7 +58,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        317
-#define _APS_NEXT_COMMAND_VALUE         32820
+#define _APS_NEXT_COMMAND_VALUE         32825
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
