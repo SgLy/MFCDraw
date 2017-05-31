@@ -1,10 +1,10 @@
 
-// MFCDrawView.cpp : CMFCDrawView ÀàµÄÊµÏÖ
+// MFCDrawView.cpp : CMFCDrawView ç±»çš„å®žçŽ°
 //
 
 #include "stdafx.h"
-// SHARED_HANDLERS ¿ÉÒÔÔÚÊµÏÖÔ¤ÀÀ¡¢ËõÂÔÍ¼ºÍËÑË÷É¸Ñ¡Æ÷¾ä±úµÄ
-// ATL ÏîÄ¿ÖÐ½øÐÐ¶¨Òå£¬²¢ÔÊÐíÓë¸ÃÏîÄ¿¹²ÏíÎÄµµ´úÂë¡£
+// SHARED_HANDLERS å¯ä»¥åœ¨å®žçŽ°é¢„è§ˆã€ç¼©ç•¥å›¾å’Œæœç´¢ç­›é€‰å™¨å¥æŸ„çš„
+// ATL é¡¹ç›®ä¸­è¿›è¡Œå®šä¹‰ï¼Œå¹¶å…è®¸ä¸Žè¯¥é¡¹ç›®å…±äº«æ–‡æ¡£ä»£ç ã€‚
 #ifndef SHARED_HANDLERS
 #include "MFCDraw.h"
 #endif
@@ -27,7 +27,7 @@
 IMPLEMENT_DYNCREATE(CMFCDrawView, CView)
 
 BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
-	// ±ê×¼´òÓ¡ÃüÁî
+	// æ ‡å‡†æ‰“å°å‘½ä»¤
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
@@ -74,11 +74,13 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENU_BRUSH_FILL, &CMFCDrawView::OnUpdateMenuBrushFill)
 	ON_COMMAND(ID_MENU_DRAW_CLEAR, &CMFCDrawView::OnMenuDrawClear)
 	ON_COMMAND(ID_MENU_LINE_WIDTH, &CMFCDrawView::OnMenuPenWidth)
+	ON_COMMAND(ID_LINE_PEN, &CMFCDrawView::OnLinePen)
+	ON_UPDATE_COMMAND_UI(ID_LINE_PEN, &CMFCDrawView::OnUpdateLinePen)
 	ON_COMMAND(ID_MENU_NET_SERVER, &CMFCDrawView::OnMenuNetServer)
 	ON_COMMAND(ID_MENU_NET_CLIENT, &CMFCDrawView::OnMenuNetClient)
 END_MESSAGE_MAP()
 
-// CMFCDrawView ¹¹Ôì/Îö¹¹
+// CMFCDrawView æž„é€ /æžæž„
 
 #define HS_FILL 6
 
@@ -107,13 +109,13 @@ CMFCDrawView::~CMFCDrawView()
 
 BOOL CMFCDrawView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: ÔÚ´Ë´¦Í¨¹ýÐÞ¸Ä
-	//  CREATESTRUCT cs À´ÐÞ¸Ä´°¿ÚÀà»òÑùÊ½
+	// TODO: åœ¨æ­¤å¤„é€šè¿‡ä¿®æ”¹
+	//  CREATESTRUCT cs æ¥ä¿®æ”¹çª—å£ç±»æˆ–æ ·å¼
 
 	return CView::PreCreateWindow(cs);
 }
 
-// CMFCDrawView »æÖÆ
+// CMFCDrawView ç»˜åˆ¶
 
 void CMFCDrawView::OnDraw(CDC* /*pDC*/)
 {
@@ -122,30 +124,30 @@ void CMFCDrawView::OnDraw(CDC* /*pDC*/)
 	if (!pDoc)
 		return;
 
-	// TODO: ÔÚ´Ë´¦Îª±¾»úÊý¾ÝÌí¼Ó»æÖÆ´úÂë
+	// TODO: åœ¨æ­¤å¤„ä¸ºæœ¬æœºæ•°æ®æ·»åŠ ç»˜åˆ¶ä»£ç 
 }
 
 
-// CMFCDrawView ´òÓ¡
+// CMFCDrawView æ‰“å°
 
 BOOL CMFCDrawView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// Ä¬ÈÏ×¼±¸
+	// é»˜è®¤å‡†å¤‡
 	return DoPreparePrinting(pInfo);
 }
 
 void CMFCDrawView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: Ìí¼Ó¶îÍâµÄ´òÓ¡Ç°½øÐÐµÄ³õÊ¼»¯¹ý³Ì
+	// TODO: æ·»åŠ é¢å¤–çš„æ‰“å°å‰è¿›è¡Œçš„åˆå§‹åŒ–è¿‡ç¨‹
 }
 
 void CMFCDrawView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: Ìí¼Ó´òÓ¡ºó½øÐÐµÄÇåÀí¹ý³Ì
+	// TODO: æ·»åŠ æ‰“å°åŽè¿›è¡Œçš„æ¸…ç†è¿‡ç¨‹
 }
 
 
-// CMFCDrawView Õï¶Ï
+// CMFCDrawView è¯Šæ–­
 
 #ifdef _DEBUG
 void CMFCDrawView::AssertValid() const
@@ -158,7 +160,7 @@ void CMFCDrawView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CMFCDrawDoc* CMFCDrawView::GetDocument() const // ·Çµ÷ÊÔ°æ±¾ÊÇÄÚÁªµÄ
+CMFCDrawDoc* CMFCDrawView::GetDocument() const // éžè°ƒè¯•ç‰ˆæœ¬æ˜¯å†…è”çš„
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMFCDrawDoc)));
 	return (CMFCDrawDoc*)m_pDocument;
@@ -166,7 +168,7 @@ CMFCDrawDoc* CMFCDrawView::GetDocument() const // ·Çµ÷ÊÔ°æ±¾ÊÇÄÚÁªµÄ
 #endif //_DEBUG
 
 
-// CMFCDrawView ÏûÏ¢´¦Àí³ÌÐò
+// CMFCDrawView æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
@@ -211,14 +213,18 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 	}
 
 
-	if (op.mode == DRAW_LINE) {
-		p->MoveTo(op.st);
-		p->LineTo(op.ed);
+	if (option.mode == DRAW_LINE) {
+		p->MoveTo(st);
+		p->LineTo(ed);
 	}
-	else if (op.mode == DRAW_RECT)
-		p->Rectangle(CRect(op.st, op.ed));
-	else if (op.mode == DRAW_ELLI)
-		p->Ellipse(CRect(op.st, op.ed));
+	else if (option.mode == DRAW_RECT)
+		p->Rectangle(CRect(st, ed));
+	else if (option.mode == DRAW_ELLI)
+		p->Ellipse(CRect(st, ed));
+	else if (option.mode == DRAW_PEN) {
+		p->MoveTo(st);
+		p->LineTo(ed);
+  }
 
 	// Release resources
 	delete p0;
@@ -238,7 +244,7 @@ void CMFCDrawView::OnLButtonDown(UINT nFlags, CPoint point)
 	
 	CString buf;
 	CMainFrame *pFrmWnd = (CMainFrame*)GetTopLevelFrame();
-	buf.Format(L"Æðµã: (%d, %d)", option.st.x, option.st.y);
+	buf.Format(L"èµ·ç‚¹: (%d, %d)", option.st.x, option.st.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->start_point, buf);
 
 	CView::OnLButtonDown(nFlags, point);
@@ -280,14 +286,21 @@ void CMFCDrawView::OnMouseMove(UINT nFlags, CPoint point)
 	CDC * pDC = GetDC();
 	CString buf;
 	CMainFrame *pFrmWnd = (CMainFrame*)GetTopLevelFrame();
-	buf.Format(L"Ö¸ÕëÎ»ÖÃ: (%d, %d)", point.x, point.y);
+	buf.Format(L"æŒ‡é’ˆä½ç½®: (%d, %d)", point.x, point.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->cursor, buf);
 	if (isButtonDown) {
-		Draw(DRAW_XOR, DRAW_NULL);
-		option.ed = point;
-		Draw(DRAW_XOR, DRAW_NULL);
+		if (option.mode != DRAW_PEN) {
+		  Draw(DRAW_XOR, DRAW_NULL);
+		  option.ed = point;
+		  Draw(DRAW_XOR, DRAW_NULL);
+		}
+		else {
+			option.st = option.ed;
+			option.ed = point;
+      Draw(DRAW_COPY, DRAW_SEND);
+		}
 
-		buf.Format(L"´óÐ¡: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
+		buf.Format(L"å¤§å°: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
 		pFrmWnd->setStatusBarVal(pFrmWnd->size, buf);
 	}
 	ReleaseDC(pDC);
@@ -522,6 +535,18 @@ void CMFCDrawView::OnMenuPenWidth()
 	}
 }
 
+void CMFCDrawView::OnLinePen()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	option.mode = DRAW_PEN;
+}
+
+
+void CMFCDrawView::OnUpdateLinePen(CCmdUI *pCmdUI)
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤æ›´æ–°ç”¨æˆ·ç•Œé¢å¤„ç†ç¨‹åºä»£ç 
+	pCmdUI->SetCheck(option.mode == DRAW_PEN);
+}
 
 void CMFCDrawView::OnMenuNetServer()
 {

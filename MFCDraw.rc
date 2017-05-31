@@ -112,6 +112,7 @@ BEGIN
     BUTTON      ID_MENU_DRAW_LINE
     BUTTON      ID_MENU_DRAW_RECT
     BUTTON      ID_MENU_DRAW_ELLI
+    BUTTON      ID_LINE_PEN
     SEPARATOR
     BUTTON      ID_MENU_BRUSH_COLOR
     BUTTON      ID_MENU_BRUSH_FILL
@@ -176,6 +177,7 @@ BEGIN
         MENUITEM "直线(&L)",                      ID_MENU_DRAW_LINE
         MENUITEM "矩形(&R)",                      ID_MENU_DRAW_RECT
         MENUITEM "椭圆(&E)",                      ID_MENU_DRAW_ELLI
+        MENUITEM "铅笔(&P)",                      ID_LINE_PEN
         MENUITEM "清屏(&C)",                      ID_MENU_DRAW_CLEAR
     END
     POPUP "线条(&L)"
@@ -502,6 +504,7 @@ END
 STRINGTABLE
 BEGIN
     ID_MENU_LINE_WIDTH      "设置线条宽度\n线条宽度"
+    ID_LINE_PEN             "铅笔：用选定的线宽画一个任意的线条\n铅笔"
 END
 
 STRINGTABLE
