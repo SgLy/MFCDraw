@@ -108,7 +108,7 @@ void Socket::OnAccept(int nErrorCode)
 void Socket::OnClose(int nErrorCode)
 {
 	// TODO: Add your specialized code here and/or call the base class
-	AfxMessageBox(L"close");
+	// AfxMessageBox(L"close");
 	CAsyncSocket::OnClose(nErrorCode);
 }
 
@@ -116,6 +116,6 @@ void Socket::OnClose(int nErrorCode)
 void Socket::OnSend(int nErrorCode)
 {
 	// TODO: Add your specialized code here and/or call the base class
-	AfxMessageBox(L"send");
+	// AfxMessageBox(L"send");
 	CAsyncSocket::OnSend(nErrorCode);
 }

@@ -177,10 +177,14 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 	if (DRAW_SEND == net) {
 		if (c_sock)
 			c_sock->Send(&option, sizeof(option), 0);
+		else if (s_sock)
+			s_sock->Send(&option, sizeof(option), 0);
 	}
 	else if (DRAW_RECV == net) {
 		if (s_sock)
 			s_sock->Receive(&op, sizeof(op), 0);
+		else if (c_sock)
+			c_sock->Receive(&op, sizeof(op), 0);
 	}
 
 	CDC * p = GetDC();
