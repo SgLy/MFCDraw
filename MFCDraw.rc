@@ -17,7 +17,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (Simplified, PRC) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -214,6 +214,11 @@ BEGIN
         MENUITEM "打开服务端(&S)",                   ID_MENU_NET_SERVER
         MENUITEM "打开客户端(&C)",                   ID_MENU_NET_CLIENT
     END
+    POPUP "小功能(&F)"
+    BEGIN
+        MENUITEM "BGM(&P)",                     ID_BGM_PLAY
+        MENUITEM "图画保存(&C)",                    ID_CLIENT_SAVE
+    END
     POPUP "帮助(&H)"
     BEGIN
         MENUITEM "关于 MFCDraw(&A)...",           ID_APP_ABOUT
@@ -349,6 +354,14 @@ IDD_DIALOG1 AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+IDR_WOTW                WAVE                    "res\\Weight of the World (English Version).wav"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -518,7 +531,7 @@ BEGIN
     ID_MENU_BRUSH_DIAGCROSS "笔刷样式：斜十字线\n斜十字线"
 END
 
-#endif    // Chinese (Simplified, PRC) resources
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

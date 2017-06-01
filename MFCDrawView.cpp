@@ -17,6 +17,11 @@
 
 #include "Socket.h"
 
+//播放音乐所需
+#include <windows.h>
+#include <mmsystem.h>
+#pragma comment( lib, "Winmm.lib" )  
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -79,6 +84,9 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_COMMAND(ID_MENU_NET_SERVER, &CMFCDrawView::OnMenuNetServer)
 	ON_COMMAND(ID_MENU_NET_CLIENT, &CMFCDrawView::OnMenuNetClient)
 	ON_COMMAND(ID_EDIT_UNDO, &CMFCDrawView::OnEditUndo)
+	ON_COMMAND(ID_BGM_PLAY, &CMFCDrawView::OnBgmPlay)
+	ON_UPDATE_COMMAND_UI(ID_BGM_PLAY, &CMFCDrawView::OnUpdateBgmPlay)
+	ON_COMMAND(ID_CLIENT_SAVE, &CMFCDrawView::OnClientSave)
 END_MESSAGE_MAP()
 
 // CMFCDrawView 构造/析构
@@ -104,6 +112,9 @@ CMFCDrawView::CMFCDrawView()
 	history.clear();
 
 	AfxSocketInit();
+
+	m_bPlay = false;
+	m_bOnOff = false;
 }
 
 CMFCDrawView::~CMFCDrawView()
@@ -587,4 +598,55 @@ void CMFCDrawView::OnEditUndo()
 		Draw(DRAW_COPY, DRAW_NULL);
 	}
 	option = option_backup;
+}
+
+
+void CMFCDrawView::OnBgmPlay()
+{
+	// TODO: 在此添加命令处理程序代码
+	m_bOnOff = !m_bOnOff;
+	m_bPlay = !m_bPlay;
+	if (m_bOnOff) PlaySound((LPCTSTR)IDR_WOTW, AfxGetInstanceHandle(), SND_RESOURCE | SND_ASYNC | SND_LOOP);
+	else PlaySound(NULL, NULL, NULL);
+}
+
+
+void CMFCDrawView::OnUpdateBgmPlay(CCmdUI *pCmdUI)
+{
+	// TODO: 在此添加命令更新用户界面处理程序代码
+	if (m_bPlay) pCmdUI->SetCheck(true);
+	else pCmdUI->SetCheck(false);
+}
+
+
+void CMFCDrawView::OnClientSave()
+{
+	// TODO: 在此添加命令处理程序代码
+	RECT ClientRect;
+	GetClientRect(&ClientRect);
+	int w = ClientRect.right;//
+	int h = ClientRect.bottom; // 
+	CDC *pDC = GetDC(); // 获取当前DC
+	CDC mdc; // 定义内存DC
+	mdc.CreateCompatibleDC(pDC); // 创建与当前DC兼容的内存DC
+	CBitmap bmp; // 定义位图对象（用作内存DC中的画布）
+				 // 创建宽高为w、h并与当前DC兼容的位图
+	CBitmap *pOldBmp;
+	bmp.CreateCompatibleBitmap(pDC, w, h);
+	pOldBmp = mdc.SelectObject(&bmp); // 将该位图选入内存DC
+	mdc.BitBlt(0, 0, w, h, pDC, 0, 0, SRCCOPY);
+	GetTopLevelFrame()->ShowWindow(SW_SHOW); // 显示程序窗口
+											 // 保存文件对话框要用的扩展名过滤器串
+	wchar_t filters[] = L"联合图象专家组[JPEG]文件(*.jpg)|*.jpg|";
+	GetTopLevelFrame()->ShowWindow(SW_HIDE); // 隐藏程序窗口
+	CFileDialog fileDlg(FALSE, L"jpg", L"s.jpg", OFN_HIDEREADONLY, filters);
+	if (fileDlg.DoModal() == IDOK) {
+		CImage img;
+		img.Attach(bmp);
+		img.Save(fileDlg.GetPathName());
+	}
+	GetTopLevelFrame()->ShowWindow(SW_SHOW); // 显示程序窗口
+	mdc.SelectObject(pOldBmp);
+	bmp.DeleteObject();
+	ReleaseDC(pDC);
 }

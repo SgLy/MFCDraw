@@ -40,7 +40,8 @@ public:
 	void Draw(draw_mode_t mode, draw_net_t net);
 	void OnReceive();
 	void OnAccept();
-
+	bool m_bPlay;    //控制菜单项UI更新
+	bool m_bOnOff;    //控制音乐播放
 	// 重写
 public:
 	virtual void OnDraw(CDC* pDC);  // 重写以绘制该视图
@@ -121,6 +122,9 @@ public:
 	afx_msg void OnMenuNetServer();
 	afx_msg void OnMenuNetClient();
 	afx_msg void OnEditUndo();
+	afx_msg void OnBgmPlay();
+	afx_msg void OnUpdateBgmPlay(CCmdUI *pCmdUI);
+	afx_msg void OnClientSave();
 };
 
 #ifndef _DEBUG  // MFCDrawView.cpp 中的调试版本
