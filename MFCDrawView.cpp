@@ -84,7 +84,7 @@ END_MESSAGE_MAP()
 
 #define HS_FILL 6
 
-Socket * c_sock, * s_list_sock, * s_sock;
+Socket * sock, * s_list_sock;
 
 CMFCDrawView::CMFCDrawView()
 {
@@ -175,16 +175,12 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 {
 	option_t op = option;
 	if (DRAW_SEND == net) {
-		if (c_sock)
-			c_sock->Send(&option, sizeof(option), 0);
-		else if (s_sock)
-			s_sock->Send(&option, sizeof(option), 0);
+		if (sock)
+			sock->Send(&option, sizeof(option), 0);
 	}
 	else if (DRAW_RECV == net) {
-		if (s_sock)
-			s_sock->Receive(&op, sizeof(op), 0);
-		else if (c_sock)
-			c_sock->Receive(&op, sizeof(op), 0);
+		if (sock)
+			sock->Receive(&op, sizeof(op), 0);
 	}
 
 	CDC * p = GetDC();
@@ -561,13 +557,13 @@ void CMFCDrawView::OnMenuNetServer()
 
 void CMFCDrawView::OnMenuNetClient()
 {
-	c_sock = new Socket(this);
-	c_sock->Create();
-	c_sock->Connect(L"localhost", 64190);
+	sock = new Socket(this);
+	sock->Create();
+	sock->Connect(L"localhost", 64190);
 }
 
 void CMFCDrawView::OnAccept()
 {
-	s_sock = new Socket(this);
-	s_list_sock->Accept(*s_sock);
+	sock = new Socket(this);
+	s_list_sock->Accept(*sock);
 }
