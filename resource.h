@@ -1,4 +1,6 @@
 //{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ 生成的包含文件。
+// 供 MFCDraw.rc 使用
 //
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
@@ -8,6 +10,7 @@
 #define IDB_BITMAP2                     312
 #define IDR_TOOLBAR1                    313
 #define IDD_DIALOG1                     315
+#define IDR_WOTW                        317
 #define IDC_EDIT1                       1000
 #define IDC_SPIN1                       1001
 #define IDC_PEN_WIDTH_SPIN              1001
@@ -44,6 +47,10 @@
 #define ID_MENU_NET_SERV                32826
 #define ID_MENU_NET_CLIENT              32827
 #define ID_MENU_NET_SERVER              32828
+#define ID_32829                        32829
+#define ID_32830                        32830
+#define ID_BGM_PLAY                     32831
+#define ID_CLIENT_SAVE                  32832
 #define ID_MENU_BRUSH_HORIZONTAL        33798
 #define ID_MENU_BRUSH_VERTICAL          33799
 #define ID_MENU_BRUSH_FDIAGONAL         33800
@@ -59,8 +66,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        317
-#define _APS_NEXT_COMMAND_VALUE         32829
+#define _APS_NEXT_RESOURCE_VALUE        318
+#define _APS_NEXT_COMMAND_VALUE         32833
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

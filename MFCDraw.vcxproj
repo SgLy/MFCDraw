@@ -220,6 +220,9 @@
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\toolbar1.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\Weight of the World (English Version).wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
