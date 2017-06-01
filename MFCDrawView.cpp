@@ -78,6 +78,7 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_UPDATE_COMMAND_UI(ID_LINE_PEN, &CMFCDrawView::OnUpdateLinePen)
 	ON_COMMAND(ID_MENU_NET_SERVER, &CMFCDrawView::OnMenuNetServer)
 	ON_COMMAND(ID_MENU_NET_CLIENT, &CMFCDrawView::OnMenuNetClient)
+	ON_COMMAND(ID_EDIT_UNDO, &CMFCDrawView::OnEditUndo)
 END_MESSAGE_MAP()
 
 // CMFCDrawView ¹¹Ôì/Îö¹¹
@@ -98,9 +99,11 @@ CMFCDrawView::CMFCDrawView()
 	option.transparent = false;
 	option.brushCol = RGB(128, 128, 255);
 
-	AfxSocketInit();
-
 	option.mode = DRAW_LINE;
+
+	history.clear();
+
+	AfxSocketInit();
 }
 
 CMFCDrawView::~CMFCDrawView()
@@ -183,6 +186,10 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 			sock->Receive(&op, sizeof(op), 0);
 	}
 
+	if (DRAW_COPY == mode) {
+		history.push_back(op);
+	}
+
 	CDC * p = GetDC();
 
 	// Set pen
@@ -230,7 +237,6 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 	delete p0;
 	delete p1;
 	delete b0;
-
 }
 
 void CMFCDrawView::OnReceive() {
@@ -566,4 +572,19 @@ void CMFCDrawView::OnAccept()
 {
 	sock = new Socket(this);
 	s_list_sock->Accept(*sock);
+}
+
+
+void CMFCDrawView::OnEditUndo()
+{
+	RedrawWindow();
+	auto old_history = history;
+	old_history.pop_back();
+	history.clear();
+	auto option_backup = option;
+	for (auto op : old_history) {
+		option = op;
+		Draw(DRAW_COPY, DRAW_NULL);
+	}
+	option = option_backup;
 }

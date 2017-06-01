@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <vector>
+
 enum mode_t {
 	DRAW_LINE,
 	DRAW_RECT,
@@ -73,6 +75,7 @@ public:
 	bool isButtonDown;
 	CPen * p0, *p1;
 	CBrush * b0;
+	std::vector<option_t> history;
 
 public:
 	afx_msg void OnMenuDrawLine();
@@ -117,6 +120,7 @@ public:
 	afx_msg void OnUpdateLinePen(CCmdUI *pCmdUI);
 	afx_msg void OnMenuNetServer();
 	afx_msg void OnMenuNetClient();
+	afx_msg void OnEditUndo();
 };
 
 #ifndef _DEBUG  // MFCDrawView.cpp 中的调试版本
