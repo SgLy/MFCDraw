@@ -87,6 +87,10 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_COMMAND(ID_BGM_PLAY, &CMFCDrawView::OnBgmPlay)
 	ON_UPDATE_COMMAND_UI(ID_BGM_PLAY, &CMFCDrawView::OnUpdateBgmPlay)
 	ON_COMMAND(ID_CLIENT_SAVE, &CMFCDrawView::OnClientSave)
+	ON_COMMAND(ID_BACK_STRE, &CMFCDrawView::OnBackStre)
+	ON_COMMAND(ID_BACK_TILE, &CMFCDrawView::OnBackTile)
+	ON_COMMAND(ID_BACK_ORIG, &CMFCDrawView::OnBackOrig)
+	ON_COMMAND(ID_BACK_CLEAR, &CMFCDrawView::OnBackClear)
 END_MESSAGE_MAP()
 
 // CMFCDrawView 构造/析构
@@ -115,6 +119,9 @@ CMFCDrawView::CMFCDrawView()
 
 	m_bPlay = false;
 	m_bOnOff = false;
+
+	m_iVar = 0;
+	m_bClear = false;
 }
 
 CMFCDrawView::~CMFCDrawView()
@@ -131,13 +138,42 @@ BOOL CMFCDrawView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CMFCDrawView 绘制
 
-void CMFCDrawView::OnDraw(CDC* /*pDC*/)
+void CMFCDrawView::OnDraw(CDC* pDC)
 {
 	CMFCDrawDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-
+	if (!img.IsNull() && m_iVar != 0 && m_bClear == false) {
+		if (m_iVar == 1) {  //拉伸
+			CRect ClientRect;
+			GetClientRect(&ClientRect);
+			int W = ClientRect.Width(), H = ClientRect.Height();
+			int w = img.GetWidth(), h = img.GetHeight();
+			pDC->SetStretchBltMode(HALFTONE);  //高质量模式，防止失真
+			img.StretchBlt(pDC->m_hDC, 0, 0, W, H, SRCCOPY);   //位图传送（拉伸）
+		}
+		else if (m_iVar == 2) {  //平铺
+			CRect ClientRect;
+			GetClientRect(&ClientRect);
+			int W = ClientRect.Width(), H = ClientRect.Height();
+			int w = img.GetWidth(), h = img.GetHeight();
+			pDC->SetStretchBltMode(HALFTONE);  //高质量模式，防止失真
+			for (int i = 0; i < W; i += w)
+				for (int j = 0; j < H; j += h)
+					img.BitBlt(pDC->m_hDC, i, j, SRCCOPY);
+		}
+		else if (m_iVar == 3) {  //原图
+			img.Draw(pDC->m_hDC, 0, 0);   //直接绘图
+		}
+	}
+	if (m_bClear ==  true) {  //清除底图
+		CRect ClientRect;
+		GetClientRect(&ClientRect);
+		InvalidateRect(ClientRect);
+		UpdateWindow();
+		m_bClear = false;
+	}
 	// TODO: 在此处为本机数据添加绘制代码
 }
 
@@ -649,4 +685,59 @@ void CMFCDrawView::OnClientSave()
 	mdc.SelectObject(pOldBmp);
 	bmp.DeleteObject();
 	ReleaseDC(pDC);
+}
+
+
+void CMFCDrawView::OnBackStre()
+{
+	// TODO: 在此添加命令处理程序代码
+	RedrawWindow();
+	m_iVar = 1;
+	OnLoad();
+}
+
+
+void CMFCDrawView::OnBackTile()
+{
+	// TODO: 在此添加命令处理程序代码
+	RedrawWindow();
+	m_iVar = 2;
+	OnLoad();
+}
+
+
+void CMFCDrawView::OnBackOrig()
+{
+	// TODO: 在此添加命令处理程序代码
+	RedrawWindow();
+	m_iVar = 3;
+	OnLoad();
+}
+
+
+void CMFCDrawView::OnLoad()
+{
+	// TODO: 在此添加命令处理程序代码
+	CFileDialog dlg(TRUE);///TRUE为OPEN对话框，FALSE为SAVE AS对话框
+	CString FileName;
+	HRESULT hResult;
+	if (dlg.DoModal() == IDOK)
+	{
+		FileName = dlg.GetPathName();    //选择的文件路径   
+		if (!img.IsNull()) img.Destroy();
+		hResult = img.Load(FileName);
+		if (FAILED(hResult)) {
+			MessageBox(_T("调用图像文件失败！"));
+			return;
+		}
+	}
+	Invalidate(); // 强制调用OnDraw
+}
+
+void CMFCDrawView::OnBackClear()
+{
+	// TODO: 在此添加命令处理程序代码
+	m_iVar = 0;
+	m_bClear = true;
+	Invalidate(); // 强制调用OnDraw
 }

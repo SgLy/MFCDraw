@@ -218,6 +218,13 @@ BEGIN
     BEGIN
         MENUITEM "BGM(&P)",                     ID_BGM_PLAY
         MENUITEM "Í¼»­±£´æ(&C)",                    ID_CLIENT_SAVE
+        POPUP "´ò¿ªµ×Í¼(&B)"
+        BEGIN
+            MENUITEM "À­Éì",                          ID_BACK_STRE
+            MENUITEM "Æ½ÆÌ",                          ID_BACK_TILE
+            MENUITEM "Ô­Í¼",                          ID_BACK_ORIG
+            MENUITEM "Çå³þµ×Í¼(&C)",                    ID_BACK_CLEAR
+        END
     END
     POPUP "°ïÖú(&H)"
     BEGIN

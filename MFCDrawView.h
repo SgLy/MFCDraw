@@ -42,6 +42,11 @@ public:
 	void OnAccept();
 	bool m_bPlay;    //控制菜单项UI更新
 	bool m_bOnOff;    //控制音乐播放
+	CImage img;
+	int m_iVar;  //判断底图打开方式
+	bool m_bClear;  //是否清楚底图
+
+	void OnLoad();  //装载图片到img中
 	// 重写
 public:
 	virtual void OnDraw(CDC* pDC);  // 重写以绘制该视图
@@ -125,6 +130,10 @@ public:
 	afx_msg void OnBgmPlay();
 	afx_msg void OnUpdateBgmPlay(CCmdUI *pCmdUI);
 	afx_msg void OnClientSave();
+	afx_msg void OnBackStre();
+	afx_msg void OnBackTile();
+	afx_msg void OnBackOrig();
+	afx_msg void OnBackClear();
 };
 
 #ifndef _DEBUG  // MFCDrawView.cpp 中的调试版本
