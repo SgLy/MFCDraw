@@ -223,7 +223,7 @@ BEGIN
             MENUITEM "À­Éì",                          ID_BACK_STRE
             MENUITEM "Æ½ÆÌ",                          ID_BACK_TILE
             MENUITEM "Ô­Í¼",                          ID_BACK_ORIG
-            MENUITEM "Çå³þµ×Í¼(&C)",                    ID_BACK_CLEAR
+            MENUITEM "Çå³ýµ×Í¼(&C)",                    ID_BACK_CLEAR
         END
     END
     POPUP "°ïÖú(&H)"
