@@ -134,6 +134,10 @@ BEGIN
     BUTTON      ID_MENU_LINE_NULL
     SEPARATOR
     BUTTON      ID_MENU_DRAW_CLEAR
+    SEPARATOR
+    BUTTON      ID_BACK_CLEAR
+    BUTTON      ID_CLIENT_SAVE
+    BUTTON      ID_BGM_PLAY
 END
 
 
@@ -220,9 +224,9 @@ BEGIN
         MENUITEM "图画保存(&C)",                    ID_CLIENT_SAVE
         POPUP "打开底图(&B)"
         BEGIN
-            MENUITEM "拉伸",                          ID_BACK_STRE
-            MENUITEM "平铺",                          ID_BACK_TILE
-            MENUITEM "原图",                          ID_BACK_ORIG
+            MENUITEM "拉伸(&S)",                      ID_BACK_STRE
+            MENUITEM "平铺(&T)",                      ID_BACK_TILE
+            MENUITEM "原图(&O)",                      ID_BACK_ORIG
             MENUITEM "清除底图(&C)",                    ID_BACK_CLEAR
         END
     END
@@ -525,6 +529,7 @@ STRINGTABLE
 BEGIN
     ID_MENU_LINE_WIDTH      "设置线条宽度\n线条宽度"
     ID_LINE_PEN             "铅笔：用选定的线宽画一个任意的线条\n铅笔"
+    ID_BGM_PLAY             "bgm播放\nbgm播放"
 END
 
 STRINGTABLE
@@ -536,6 +541,12 @@ BEGIN
     ID_MENU_BRUSH_BDIAGONAL "笔刷样式：反斜线\n反斜线"
     ID_MENU_BRUSH_CROSS     "笔刷样式：十字线\n十字线"
     ID_MENU_BRUSH_DIAGCROSS "笔刷样式：斜十字线\n斜十字线"
+END
+
+STRINGTABLE
+BEGIN
+    ID_CLIENT_SAVE          "储存画图\n存储画图"
+    ID_BACK_CLEAR           "清楚底图\n清除底图"
 END
 
 #endif    // 中文(简体，中国) resources

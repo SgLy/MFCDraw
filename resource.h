@@ -62,6 +62,7 @@
 #define ID_BACK_ORIG                    32841
 #define ID_32842                        32842
 #define ID_BACK_CLEAR                   32843
+#define ID_BUTTON32857                  32857
 #define ID_MENU_BRUSH_HORIZONTAL        33798
 #define ID_MENU_BRUSH_VERTICAL          33799
 #define ID_MENU_BRUSH_FDIAGONAL         33800
@@ -78,7 +79,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        318
-#define _APS_NEXT_COMMAND_VALUE         32844
+#define _APS_NEXT_COMMAND_VALUE         32858
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

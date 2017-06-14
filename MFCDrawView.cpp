@@ -675,7 +675,7 @@ void CMFCDrawView::OnClientSave()
 											 // 保存文件对话框要用的扩展名过滤器串
 	wchar_t filters[] = L"联合图象专家组[JPEG]文件(*.jpg)|*.jpg|";
 	GetTopLevelFrame()->ShowWindow(SW_HIDE); // 隐藏程序窗口
-	CFileDialog fileDlg(FALSE, L"jpg", L"s.jpg", OFN_HIDEREADONLY, filters);
+	CFileDialog fileDlg(FALSE, L"jpg", L"MYPAIN.jpg", OFN_HIDEREADONLY, filters);
 	if (fileDlg.DoModal() == IDOK) {
 		CImage img;
 		img.Attach(bmp);
