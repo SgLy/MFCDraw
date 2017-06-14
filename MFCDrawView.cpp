@@ -1,10 +1,10 @@
 
-// MFCDrawView.cpp : CMFCDrawView ÀàµÄÊµÏÖ
+// MFCDrawView.cpp : CMFCDrawView ç±»çš„å®ç°
 //
 
 #include "stdafx.h"
-// SHARED_HANDLERS ¿ÉÒÔÔÚÊµÏÖÔ¤ÀÀ¡¢ËõÂÔÍ¼ºÍËÑË÷É¸Ñ¡Æ÷¾ä±úµÄ
-// ATL ÏîÄ¿ÖĞ½øĞĞ¶¨Òå£¬²¢ÔÊĞíÓë¸ÃÏîÄ¿¹²ÏíÎÄµµ´úÂë¡£
+// SHARED_HANDLERS å¯ä»¥åœ¨å®ç°é¢„è§ˆã€ç¼©ç•¥å›¾å’Œæœç´¢ç­›é€‰å™¨å¥æŸ„çš„
+// ATL é¡¹ç›®ä¸­è¿›è¡Œå®šä¹‰ï¼Œå¹¶å…è®¸ä¸è¯¥é¡¹ç›®å…±äº«æ–‡æ¡£ä»£ç ã€‚
 #ifndef SHARED_HANDLERS
 #include "MFCDraw.h"
 #endif
@@ -20,7 +20,7 @@
 
 #include "Socket.h"
 
-//²¥·ÅÒôÀÖËùĞè
+//æ’­æ”¾éŸ³ä¹æ‰€éœ€
 #include <windows.h>
 #include <mmsystem.h>
 #pragma comment( lib, "Winmm.lib" )  
@@ -35,7 +35,7 @@
 IMPLEMENT_DYNCREATE(CMFCDrawView, CView)
 
 BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
-	// ±ê×¼´òÓ¡ÃüÁî
+	// æ ‡å‡†æ‰“å°å‘½ä»¤
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
@@ -88,9 +88,13 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_COMMAND(ID_BGM_PLAY, &CMFCDrawView::OnBgmPlay)
 	ON_UPDATE_COMMAND_UI(ID_BGM_PLAY, &CMFCDrawView::OnUpdateBgmPlay)
 	ON_COMMAND(ID_CLIENT_SAVE, &CMFCDrawView::OnClientSave)
+	ON_COMMAND(ID_BACK_STRE, &CMFCDrawView::OnBackStre)
+	ON_COMMAND(ID_BACK_TILE, &CMFCDrawView::OnBackTile)
+	ON_COMMAND(ID_BACK_ORIG, &CMFCDrawView::OnBackOrig)
+	ON_COMMAND(ID_BACK_CLEAR, &CMFCDrawView::OnBackClear)
 END_MESSAGE_MAP()
 
-// CMFCDrawView ¹¹Ôì/Îö¹¹
+// CMFCDrawView æ„é€ /ææ„
 
 #define HS_FILL 6
 
@@ -119,6 +123,8 @@ CMFCDrawView::CMFCDrawView()
 
 	m_bPlay = false;
 	m_bOnOff = false;
+	m_iVar = 0;
+	m_bClear = false;
 
 	s_sock = new Socket(this);
 	if (!s_sock->Create(64190, SOCK_DGRAM))
@@ -149,7 +155,7 @@ CMFCDrawView::CMFCDrawView()
 		c_sock->GetSockName(self_ip, tmp);
 
 		wait_dlg = new CWaitDlg();
-		wait_dlg->prompt = L"ÕıÔÚµÈ´ıÒ»¸ö¿Í»§¶Ë¼ÓÈëÁ¬½Ó¡­¡­£¨±¾»úIP: " + self_ip + L"£©";
+		wait_dlg->prompt = L"æ­£åœ¨ç­‰å¾…ä¸€ä¸ªå®¢æˆ·ç«¯åŠ å…¥è¿æ¥â€¦â€¦ï¼ˆæœ¬æœºIP: " + self_ip + L"ï¼‰";
 		if (wait_dlg->DoModal() == IDOK) {
 			state = STATE_PLAY;
 		}
@@ -192,6 +198,7 @@ CMFCDrawView::CMFCDrawView()
 	default:
 		PostQuitMessage(0);
 	}
+
 }
 
 CMFCDrawView::~CMFCDrawView()
@@ -202,45 +209,74 @@ CMFCDrawView::~CMFCDrawView()
 
 BOOL CMFCDrawView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: ÔÚ´Ë´¦Í¨¹ıĞŞ¸Ä
-	//  CREATESTRUCT cs À´ĞŞ¸Ä´°¿ÚÀà»òÑùÊ½
+	// TODO: åœ¨æ­¤å¤„é€šè¿‡ä¿®æ”¹
+	//  CREATESTRUCT cs æ¥ä¿®æ”¹çª—å£ç±»æˆ–æ ·å¼
 
 	return CView::PreCreateWindow(cs);
 }
 
-// CMFCDrawView »æÖÆ
+// CMFCDrawView ç»˜åˆ¶
 
-void CMFCDrawView::OnDraw(CDC* /*pDC*/)
+void CMFCDrawView::OnDraw(CDC* pDC)
 {
 	CMFCDrawDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-
-	// TODO: ÔÚ´Ë´¦Îª±¾»úÊı¾İÌí¼Ó»æÖÆ´úÂë
+	if (!img.IsNull() && m_iVar != 0 && m_bClear == false) {
+		if (m_iVar == 1) {  //æ‹‰ä¼¸
+			CRect ClientRect;
+			GetClientRect(&ClientRect);
+			int W = ClientRect.Width(), H = ClientRect.Height();
+			int w = img.GetWidth(), h = img.GetHeight();
+			pDC->SetStretchBltMode(HALFTONE);  //é«˜è´¨é‡æ¨¡å¼ï¼Œé˜²æ­¢å¤±çœŸ
+			img.StretchBlt(pDC->m_hDC, 0, 0, W, H, SRCCOPY);   //ä½å›¾ä¼ é€ï¼ˆæ‹‰ä¼¸ï¼‰
+		}
+		else if (m_iVar == 2) {  //å¹³é“º
+			CRect ClientRect;
+			GetClientRect(&ClientRect);
+			int W = ClientRect.Width(), H = ClientRect.Height();
+			int w = img.GetWidth(), h = img.GetHeight();
+			pDC->SetStretchBltMode(HALFTONE);  //é«˜è´¨é‡æ¨¡å¼ï¼Œé˜²æ­¢å¤±çœŸ
+			for (int i = 0; i < W; i += w)
+				for (int j = 0; j < H; j += h)
+					img.BitBlt(pDC->m_hDC, i, j, SRCCOPY);
+		}
+		else if (m_iVar == 3) {  //åŸå›¾
+			img.Draw(pDC->m_hDC, 0, 0);   //ç›´æ¥ç»˜å›¾
+		}
+	}
+	if (m_bClear ==  true) {  //æ¸…é™¤åº•å›¾
+		CRect ClientRect;
+		GetClientRect(&ClientRect);
+		InvalidateRect(ClientRect);
+		UpdateWindow();
+		m_bClear = false;
+	}
+	// TODO: åœ¨æ­¤å¤„ä¸ºæœ¬æœºæ•°æ®æ·»åŠ ç»˜åˆ¶ä»£ç 
 }
 
 
-// CMFCDrawView ´òÓ¡
+// CMFCDrawView æ‰“å°
 
 BOOL CMFCDrawView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// Ä¬ÈÏ×¼±¸
+	// é»˜è®¤å‡†å¤‡
 	return DoPreparePrinting(pInfo);
 }
 
 void CMFCDrawView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: Ìí¼Ó¶îÍâµÄ´òÓ¡Ç°½øĞĞµÄ³õÊ¼»¯¹ı³Ì
+	// TODO: æ·»åŠ é¢å¤–çš„æ‰“å°å‰è¿›è¡Œçš„åˆå§‹åŒ–è¿‡ç¨‹
 }
 
 void CMFCDrawView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: Ìí¼Ó´òÓ¡ºó½øĞĞµÄÇåÀí¹ı³Ì
+	// TODO: æ·»åŠ æ‰“å°åè¿›è¡Œçš„æ¸…ç†è¿‡ç¨‹
 }
 
 
-// CMFCDrawView Õï¶Ï
+// CMFCDrawView è¯Šæ–­
 
 #ifdef _DEBUG
 void CMFCDrawView::AssertValid() const
@@ -253,7 +289,7 @@ void CMFCDrawView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CMFCDrawDoc* CMFCDrawView::GetDocument() const // ·Çµ÷ÊÔ°æ±¾ÊÇÄÚÁªµÄ
+CMFCDrawDoc* CMFCDrawView::GetDocument() const // éè°ƒè¯•ç‰ˆæœ¬æ˜¯å†…è”çš„
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CMFCDrawDoc)));
 	return (CMFCDrawDoc*)m_pDocument;
@@ -261,7 +297,7 @@ CMFCDrawDoc* CMFCDrawView::GetDocument() const // ·Çµ÷ÊÔ°æ±¾ÊÇÄÚÁªµÄ
 #endif //_DEBUG
 
 
-// CMFCDrawView ÏûÏ¢´¦Àí³ÌĞò
+// CMFCDrawView æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
@@ -389,7 +425,7 @@ void CMFCDrawView::OnLButtonDown(UINT nFlags, CPoint point)
 	
 	CString buf;
 	CMainFrame *pFrmWnd = (CMainFrame*)GetTopLevelFrame();
-	buf.Format(L"Æğµã: (%d, %d)", option.st.x, option.st.y);
+	buf.Format(L"èµ·ç‚¹: (%d, %d)", option.st.x, option.st.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->start_point, buf);
 
 	CView::OnLButtonDown(nFlags, point);
@@ -431,7 +467,7 @@ void CMFCDrawView::OnMouseMove(UINT nFlags, CPoint point)
 	CDC * pDC = GetDC();
 	CString buf;
 	CMainFrame *pFrmWnd = (CMainFrame*)GetTopLevelFrame();
-	buf.Format(L"Ö¸ÕëÎ»ÖÃ: (%d, %d)", point.x, point.y);
+	buf.Format(L"æŒ‡é’ˆä½ç½®: (%d, %d)", point.x, point.y);
 	pFrmWnd->setStatusBarVal(pFrmWnd->cursor, buf);
 	if (isButtonDown) {
 		if (option.mode != DRAW_PEN) {
@@ -445,7 +481,7 @@ void CMFCDrawView::OnMouseMove(UINT nFlags, CPoint point)
       Draw(DRAW_COPY, DRAW_SEND);
 		}
 
-		buf.Format(L"´óĞ¡: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
+		buf.Format(L"å¤§å°: (%d, %d)", abs(point.x - option.st.x), abs(point.y - option.st.y));
 		pFrmWnd->setStatusBarVal(pFrmWnd->size, buf);
 	}
 	ReleaseDC(pDC);
@@ -682,14 +718,14 @@ void CMFCDrawView::OnMenuPenWidth()
 
 void CMFCDrawView::OnLinePen()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	option.mode = DRAW_PEN;
 }
 
 
 void CMFCDrawView::OnUpdateLinePen(CCmdUI *pCmdUI)
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî¸üĞÂÓÃ»§½çÃæ´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤æ›´æ–°ç”¨æˆ·ç•Œé¢å¤„ç†ç¨‹åºä»£ç 
 	pCmdUI->SetCheck(option.mode == DRAW_PEN);
 }
 
@@ -710,7 +746,7 @@ void CMFCDrawView::OnEditUndo()
 
 void CMFCDrawView::OnBgmPlay()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	m_bOnOff = !m_bOnOff;
 	m_bPlay = !m_bPlay;
 	if (m_bOnOff) {
@@ -733,7 +769,7 @@ void CMFCDrawView::OnBgmPlay()
 
 void CMFCDrawView::OnUpdateBgmPlay(CCmdUI *pCmdUI)
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî¸üĞÂÓÃ»§½çÃæ´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤æ›´æ–°ç”¨æˆ·ç•Œé¢å¤„ç†ç¨‹åºä»£ç 
 	if (m_bPlay) pCmdUI->SetCheck(true);
 	else pCmdUI->SetCheck(false);
 }
@@ -741,32 +777,87 @@ void CMFCDrawView::OnUpdateBgmPlay(CCmdUI *pCmdUI)
 
 void CMFCDrawView::OnClientSave()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	RECT ClientRect;
 	GetClientRect(&ClientRect);
 	int w = ClientRect.right;//
 	int h = ClientRect.bottom; // 
-	CDC *pDC = GetDC(); // »ñÈ¡µ±Ç°DC
-	CDC mdc; // ¶¨ÒåÄÚ´æDC
-	mdc.CreateCompatibleDC(pDC); // ´´½¨Óëµ±Ç°DC¼æÈİµÄÄÚ´æDC
-	CBitmap bmp; // ¶¨ÒåÎ»Í¼¶ÔÏó£¨ÓÃ×÷ÄÚ´æDCÖĞµÄ»­²¼£©
-				 // ´´½¨¿í¸ßÎªw¡¢h²¢Óëµ±Ç°DC¼æÈİµÄÎ»Í¼
+	CDC *pDC = GetDC(); // è·å–å½“å‰DC
+	CDC mdc; // å®šä¹‰å†…å­˜DC
+	mdc.CreateCompatibleDC(pDC); // åˆ›å»ºä¸å½“å‰DCå…¼å®¹çš„å†…å­˜DC
+	CBitmap bmp; // å®šä¹‰ä½å›¾å¯¹è±¡ï¼ˆç”¨ä½œå†…å­˜DCä¸­çš„ç”»å¸ƒï¼‰
+				 // åˆ›å»ºå®½é«˜ä¸ºwã€hå¹¶ä¸å½“å‰DCå…¼å®¹çš„ä½å›¾
 	CBitmap *pOldBmp;
 	bmp.CreateCompatibleBitmap(pDC, w, h);
-	pOldBmp = mdc.SelectObject(&bmp); // ½«¸ÃÎ»Í¼Ñ¡ÈëÄÚ´æDC
+	pOldBmp = mdc.SelectObject(&bmp); // å°†è¯¥ä½å›¾é€‰å…¥å†…å­˜DC
 	mdc.BitBlt(0, 0, w, h, pDC, 0, 0, SRCCOPY);
-	GetTopLevelFrame()->ShowWindow(SW_SHOW); // ÏÔÊ¾³ÌĞò´°¿Ú
-											 // ±£´æÎÄ¼ş¶Ô»°¿òÒªÓÃµÄÀ©Õ¹Ãû¹ıÂËÆ÷´®
-	wchar_t filters[] = L"ÁªºÏÍ¼Ïó×¨¼Ò×é[JPEG]ÎÄ¼ş(*.jpg)|*.jpg|";
-	GetTopLevelFrame()->ShowWindow(SW_HIDE); // Òş²Ø³ÌĞò´°¿Ú
-	CFileDialog fileDlg(FALSE, L"jpg", L"s.jpg", OFN_HIDEREADONLY, filters);
+	GetTopLevelFrame()->ShowWindow(SW_SHOW); // æ˜¾ç¤ºç¨‹åºçª—å£
+											 // ä¿å­˜æ–‡ä»¶å¯¹è¯æ¡†è¦ç”¨çš„æ‰©å±•åè¿‡æ»¤å™¨ä¸²
+	wchar_t filters[] = L"è”åˆå›¾è±¡ä¸“å®¶ç»„[JPEG]æ–‡ä»¶(*.jpg)|*.jpg|";
+	GetTopLevelFrame()->ShowWindow(SW_HIDE); // éšè—ç¨‹åºçª—å£
+	CFileDialog fileDlg(FALSE, L"jpg", L"MYPAIN.jpg", OFN_HIDEREADONLY, filters);
 	if (fileDlg.DoModal() == IDOK) {
 		CImage img;
 		img.Attach(bmp);
 		img.Save(fileDlg.GetPathName());
 	}
-	GetTopLevelFrame()->ShowWindow(SW_SHOW); // ÏÔÊ¾³ÌĞò´°¿Ú
+	GetTopLevelFrame()->ShowWindow(SW_SHOW); // æ˜¾ç¤ºç¨‹åºçª—å£
 	mdc.SelectObject(pOldBmp);
 	bmp.DeleteObject();
 	ReleaseDC(pDC);
+}
+
+
+void CMFCDrawView::OnBackStre()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	RedrawWindow();
+	m_iVar = 1;
+	OnLoad();
+}
+
+
+void CMFCDrawView::OnBackTile()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	RedrawWindow();
+	m_iVar = 2;
+	OnLoad();
+}
+
+
+void CMFCDrawView::OnBackOrig()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	RedrawWindow();
+	m_iVar = 3;
+	OnLoad();
+}
+
+
+void CMFCDrawView::OnLoad()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	CFileDialog dlg(TRUE);///TRUEä¸ºOPENå¯¹è¯æ¡†ï¼ŒFALSEä¸ºSAVE ASå¯¹è¯æ¡†
+	CString FileName;
+	HRESULT hResult;
+	if (dlg.DoModal() == IDOK)
+	{
+		FileName = dlg.GetPathName();    //é€‰æ‹©çš„æ–‡ä»¶è·¯å¾„   
+		if (!img.IsNull()) img.Destroy();
+		hResult = img.Load(FileName);
+		if (FAILED(hResult)) {
+			MessageBox(_T("è°ƒç”¨å›¾åƒæ–‡ä»¶å¤±è´¥ï¼"));
+			return;
+		}
+	}
+	Invalidate(); // å¼ºåˆ¶è°ƒç”¨OnDraw
+}
+
+void CMFCDrawView::OnBackClear()
+{
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	m_iVar = 0;
+	m_bClear = true;
+	Invalidate(); // å¼ºåˆ¶è°ƒç”¨OnDraw
 }

@@ -36,8 +36,6 @@
 #define ID_MENU_BRUSH_TRANSPARENT       32795
 #define ID_32796                        32796
 #define ID_32797                        32797
-#define ID_BUTTON32801                  32801
-#define ID_BUTTON32802                  32802
 #define ID_BUTTON32812                  32812
 #define ID_MENU_BRUSH_ELLI              32813
 #define ID_32814                        32814
@@ -57,6 +55,18 @@
 #define ID_32830                        32830
 #define ID_BGM_PLAY                     32831
 #define ID_CLIENT_SAVE                  32832
+#define ID_32833                        32833
+#define ID_LOAD_BACK                    32834
+#define ID_32835                        32835
+#define ID_32836                        32836
+#define ID_32837                        32837
+#define ID_BACK_STRECH                  32838
+#define ID_BACK_STRE                    32839
+#define ID_BACK_TILE                    32840
+#define ID_BACK_ORIG                    32841
+#define ID_32842                        32842
+#define ID_BACK_CLEAR                   32843
+#define ID_BUTTON32857                  32857
 #define ID_MENU_BRUSH_HORIZONTAL        33798
 #define ID_MENU_BRUSH_VERTICAL          33799
 #define ID_MENU_BRUSH_FDIAGONAL         33800
@@ -67,13 +77,15 @@
 #define ID_BUTTON32805                  33805
 #define ID_BUTTON32806                  33806
 #define ID_BUTTON32807                  33807
+#define ID_BUTTON32801                  32808
+#define ID_BUTTON32802                  32809
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        324
-#define _APS_NEXT_COMMAND_VALUE         32833
+#define _APS_NEXT_COMMAND_VALUE         32858
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

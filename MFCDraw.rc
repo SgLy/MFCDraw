@@ -52,9 +52,9 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
-    "#include ""res\\MFCDraw.rc2""  // �� Microsoft Visual C++ �༭����Դ\r\n"
-    "#include ""l.CHS\\afxres.rc""      // ��׼���\r\n"
-    "#include ""l.CHS\\afxprint.rc""    // ��ӡ/��ӡԤ����Դ\r\n"
+    "#include ""res\\MFCDraw.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""l.CHS\\afxres.rc""      // 标准组件\r\n"
+    "#include ""l.CHS\\afxprint.rc""    // 打印/打印预览资源\r\n"
     "#endif\r\n"
     "\0"
 END
@@ -134,6 +134,10 @@ BEGIN
     BUTTON      ID_MENU_LINE_NULL
     SEPARATOR
     BUTTON      ID_MENU_DRAW_CLEAR
+    SEPARATOR
+    BUTTON      ID_BACK_CLEAR
+    BUTTON      ID_CLIENT_SAVE
+    BUTTON      ID_BGM_PLAY
 END
 
 
@@ -144,79 +148,86 @@ END
 
 IDR_MAINFRAME MENU
 BEGIN
-    POPUP "�ļ�(&F)"
+    POPUP "文件(&F)"
     BEGIN
-        MENUITEM "�½�(&N)\tCtrl+N",              ID_FILE_NEW
-        MENUITEM "��(&O)...\tCtrl+O",           ID_FILE_OPEN
-        MENUITEM "����(&S)\tCtrl+S",              ID_FILE_SAVE
-        MENUITEM "����Ϊ(&A)...",                  ID_FILE_SAVE_AS
+        MENUITEM "新建(&N)\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O",           ID_FILE_OPEN
+        MENUITEM "保存(&S)\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "另存为(&A)...",                  ID_FILE_SAVE_AS
         MENUITEM SEPARATOR
-        MENUITEM "��ӡ(&P)...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "��ӡԤ��(&V)",                    ID_FILE_PRINT_PREVIEW
-        MENUITEM "��ӡ����(&R)...",                 ID_FILE_PRINT_SETUP
+        MENUITEM "打印(&P)...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "打印预览(&V)",                    ID_FILE_PRINT_PREVIEW
+        MENUITEM "打印设置(&R)...",                 ID_FILE_PRINT_SETUP
         MENUITEM SEPARATOR
-        MENUITEM "������ļ�",                       ID_FILE_MRU_FILE1
+        MENUITEM "最近的文件",                       ID_FILE_MRU_FILE1
         MENUITEM SEPARATOR
-        MENUITEM "�˳�(&X)",                      ID_APP_EXIT
+        MENUITEM "退出(&X)",                      ID_APP_EXIT
     END
-    POPUP "�༭(&E)"
+    POPUP "编辑(&E)"
     BEGIN
-        MENUITEM "����(&U)\tCtrl+Z",              ID_EDIT_UNDO
+        MENUITEM "撤消(&U)\tCtrl+Z",              ID_EDIT_UNDO
         MENUITEM SEPARATOR
-        MENUITEM "����(&T)\tCtrl+X",              ID_EDIT_CUT
-        MENUITEM "����(&C)\tCtrl+C",              ID_EDIT_COPY
-        MENUITEM "ճ��(&P)\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
+        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
     END
-    POPUP "��ͼ(&V)"
+    POPUP "视图(&V)"
     BEGIN
-        MENUITEM "������(&T)",                     ID_VIEW_TOOLBAR
-        MENUITEM "״̬��(&S)",                     ID_VIEW_STATUS_BAR
+        MENUITEM "工具栏(&T)",                     ID_VIEW_TOOLBAR
+        MENUITEM "状态栏(&S)",                     ID_VIEW_STATUS_BAR
     END
-    POPUP "�滭(&D)"
+    POPUP "绘画(&D)"
     BEGIN
-        MENUITEM "ֱ��(&L)",                      ID_MENU_DRAW_LINE
-        MENUITEM "����(&R)",                      ID_MENU_DRAW_RECT
-        MENUITEM "��Բ(&E)",                      ID_MENU_DRAW_ELLI
-        MENUITEM "Ǧ��(&P)",                      ID_LINE_PEN
-        MENUITEM "����(&C)",                      ID_MENU_DRAW_CLEAR
+        MENUITEM "直线(&L)",                      ID_MENU_DRAW_LINE
+        MENUITEM "矩形(&R)",                      ID_MENU_DRAW_RECT
+        MENUITEM "椭圆(&E)",                      ID_MENU_DRAW_ELLI
+        MENUITEM "铅笔(&P)",                      ID_LINE_PEN
+        MENUITEM "清屏(&C)",                      ID_MENU_DRAW_CLEAR
     END
-    POPUP "����(&L)"
+    POPUP "线条(&L)"
     BEGIN
-        MENUITEM "��ɫ(&C)",                      ID_MENU_LINE_COLOR
-        POPUP "��ʽ(&S)"
+        MENUITEM "颜色(&C)",                      ID_MENU_LINE_COLOR
+        POPUP "样式(&S)"
         BEGIN
-            MENUITEM "ʵ��(&0)",                      ID_MENU_LINE_SOLID
-            MENUITEM "����(&1)",                      ID_MENU_LINE_DASH
-            MENUITEM "����(&2)",                      ID_MENU_LINE_DOT
-            MENUITEM "�����(&3)",                     ID_MENU_LINE_DASHDOT
-            MENUITEM "������(&4)",                    ID_MENU_LINE_DASHDOTDOT
-            MENUITEM "�ձ�(&5)",                      ID_MENU_LINE_NULL
+            MENUITEM "实心(&0)",                      ID_MENU_LINE_SOLID
+            MENUITEM "虚线(&1)",                      ID_MENU_LINE_DASH
+            MENUITEM "点线(&2)",                      ID_MENU_LINE_DOT
+            MENUITEM "虚点线(&3)",                     ID_MENU_LINE_DASHDOT
+            MENUITEM "虚点点线(&4)",                    ID_MENU_LINE_DASHDOTDOT
+            MENUITEM "空笔(&5)",                      ID_MENU_LINE_NULL
         END
-        MENUITEM "����(&W)",                      ID_MENU_LINE_WIDTH
+        MENUITEM "宽度(&W)",                      ID_MENU_LINE_WIDTH
     END
-    POPUP "��ˢ(&B)"
+    POPUP "笔刷(&B)"
     BEGIN
-        MENUITEM "��ɫ(&C)",                      ID_MENU_BRUSH_COLOR
-        MENUITEM "͸��(&T)",                      ID_MENU_BRUSH_TRANSPARENT
-        POPUP "��ʽ(&S)"
+        MENUITEM "颜色(&C)",                      ID_MENU_BRUSH_COLOR
+        MENUITEM "透明(&T)",                      ID_MENU_BRUSH_TRANSPARENT
+        POPUP "样式(&S)"
         BEGIN
-            MENUITEM "ˮƽ��(&0)",                     ID_MENU_BRUSH_HORIZONTAL
-            MENUITEM "��ֱ��(&1)",                     ID_MENU_BRUSH_VERTICAL
-            MENUITEM "��б��(&2)",                     ID_MENU_BRUSH_FDIAGONAL
-            MENUITEM "��б��(&3)",                     ID_MENU_BRUSH_BDIAGONAL
-            MENUITEM "ʮ����(&4)",                     ID_MENU_BRUSH_CROSS
-            MENUITEM "бʮ����(&5)",                    ID_MENU_BRUSH_DIAGCROSS
-            MENUITEM "���(&6)",                      ID_MENU_BRUSH_FILL
+            MENUITEM "水平线(&0)",                     ID_MENU_BRUSH_HORIZONTAL
+            MENUITEM "垂直线(&1)",                     ID_MENU_BRUSH_VERTICAL
+            MENUITEM "正斜线(&2)",                     ID_MENU_BRUSH_FDIAGONAL
+            MENUITEM "反斜线(&3)",                     ID_MENU_BRUSH_BDIAGONAL
+            MENUITEM "十字线(&4)",                     ID_MENU_BRUSH_CROSS
+            MENUITEM "斜十字线(&5)",                    ID_MENU_BRUSH_DIAGCROSS
+            MENUITEM "填充(&6)",                      ID_MENU_BRUSH_FILL
         END
     END
-    POPUP "С����(&F)"
+    POPUP "小功能(&F)"
     BEGIN
         MENUITEM "BGM(&P)",                     ID_BGM_PLAY
-        MENUITEM "ͼ������(&C)",                    ID_CLIENT_SAVE
+        MENUITEM "图画保存(&C)",                    ID_CLIENT_SAVE
+        POPUP "打开底图(&B)"
+        BEGIN
+            MENUITEM "拉伸(&S)",                      ID_BACK_STRE
+            MENUITEM "平铺(&T)",                      ID_BACK_TILE
+            MENUITEM "原图(&O)",                      ID_BACK_ORIG
+            MENUITEM "清除底图(&C)",                    ID_BACK_CLEAR
+        END
     END
-    POPUP "����(&H)"
+    POPUP "帮助(&H)"
     BEGIN
-        MENUITEM "���� MFCDraw(&A)...",           ID_APP_ABOUT
+        MENUITEM "关于 MFCDraw(&A)...",           ID_APP_ABOUT
     END
 END
 
@@ -252,52 +263,52 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "���� MFCDraw"
+CAPTION "关于 MFCDraw"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "MFCDraw��1.0 ��",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "MFCDraw，1.0 版",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2017",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "ȷ��",IDOK,113,41,50,14,WS_GROUP
+    DEFPUSHBUTTON   "确定",IDOK,113,41,50,14,WS_GROUP
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 117, 45
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "���ñʿ�"
+CAPTION "设置笔宽"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "ȷ��",IDOK,6,24,50,14
-    PUSHBUTTON      "ȡ��",IDCANCEL,60,24,50,14
-    LTEXT           "����",IDC_STATIC,6,6,17,8
+    DEFPUSHBUTTON   "确定",IDOK,6,24,50,14
+    PUSHBUTTON      "取消",IDCANCEL,60,24,50,14
+    LTEXT           "宽度",IDC_STATIC,6,6,17,8
     EDITTEXT        IDC_EDIT1,30,6,66,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_PEN_WIDTH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,96,6,12,14
 END
 
 IDD_DIALOG2 DIALOGEX 0, 0, 225, 61
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "ѡ������ģʽ"
+CAPTION "选择联机模式"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "�����µķ��� (&N)",ID_NEW_ROOM,7,7,211,21
-    PUSHBUTTON      "�鿴�����б� (&L)",ID_ROOM_LIST,7,33,211,21
+    DEFPUSHBUTTON   "建立新的房间 (&N)",ID_NEW_ROOM,7,7,211,21
+    PUSHBUTTON      "查看房间列表 (&L)",ID_ROOM_LIST,7,33,211,21
 END
 
 IDD_DIALOG3 DIALOGEX 0, 0, 283, 191
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "ѡ��һ��������롭��"
+CAPTION "选择一个房间进入……"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "���뷿�� (&E)",IDOK,218,7,58,23
+    DEFPUSHBUTTON   "进入房间 (&E)",IDOK,218,7,58,23
     LISTBOX         IDC_ROOM_LIST,7,7,200,177,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_DIALOG4 DIALOGEX 0, 0, 241, 45
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "�ȴ����ӡ���"
+CAPTION "等待连接……"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "ȡ�� (&C)",IDCANCEL,6,24,228,14
-    LTEXT           "���ڵȴ�һ���ͻ��˼������ӡ���������IP:��",IDC_PROMPT_LABEL,7,7,227,8
+    PUSHBUTTON      "取消 (&C)",IDCANCEL,6,24,228,14
+    LTEXT           "正在等待一个客户端加入连接……（本机IP:）",IDC_PROMPT_LABEL,7,7,227,8
 END
 
 
@@ -323,13 +334,13 @@ BEGIN
     BEGIN
         BLOCK "080404B0"
         BEGIN
-            VALUE "CompanyName", "TODO: <��˾��>"
+            VALUE "CompanyName", "TODO: <公司名>"
             VALUE "FileDescription", "MFCDraw"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "MFCDraw.exe"
-            VALUE "LegalCopyright", "TODO:  (C) <��˾��>��  ��������Ȩ����"
+            VALUE "LegalCopyright", "TODO:  (C) <公司名>。  保留所有权利。"
             VALUE "OriginalFilename", "MFCDraw.exe"
-            VALUE "ProductName", "TODO: <��Ʒ��>"
+            VALUE "ProductName", "TODO: <产品名>"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -424,7 +435,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDP_OLE_INIT_FAILED     "OLE ��ʼ��ʧ�ܡ�  ��ȷ�� OLE ������ȷ�İ汾��"
+    IDP_OLE_INIT_FAILED     "OLE 初始化失败。  请确保 OLE 库是正确的版本。"
 END
 
 STRINGTABLE
@@ -435,7 +446,7 @@ END
 STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "MFCDraw"
-    AFX_IDS_IDLEMESSAGE     "����"
+    AFX_IDS_IDLEMESSAGE     "就绪"
 END
 
 STRINGTABLE
@@ -450,142 +461,148 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_NEW             "�������ĵ�\n�½�"
-    ID_FILE_OPEN            "�������ĵ�\n��"
-    ID_FILE_CLOSE           "�رջ�ĵ�\n�ر�"
-    ID_FILE_SAVE            "�����ĵ�\n����"
-    ID_FILE_SAVE_AS         "�������Ʊ����ĵ�\n����Ϊ"
-    ID_FILE_PAGE_SETUP      "���Ĵ�ӡѡ��\nҳ������"
-    ID_FILE_PRINT_SETUP     "���Ĵ�ӡ��ѡ��ʹ�ӡѡ��\n��ӡ����"
-    ID_FILE_PRINT           "��ӡ��ĵ�\n��ӡ"
-    ID_FILE_PRINT_DIRECT    "ʹ�õ�ǰѡ���ӡ��ĵ�\n���ٴ�ӡ"
-    ID_FILE_PRINT_PREVIEW   "��ʾ��ҳ\n��ӡԤ��"
+    ID_FILE_NEW             "创建新文档\n新建"
+    ID_FILE_OPEN            "打开现有文档\n打开"
+    ID_FILE_CLOSE           "关闭活动文档\n关闭"
+    ID_FILE_SAVE            "保存活动文档\n保存"
+    ID_FILE_SAVE_AS         "用新名称保存活动文档\n另存为"
+    ID_FILE_PAGE_SETUP      "更改打印选项\n页面设置"
+    ID_FILE_PRINT_SETUP     "更改打印机选项和打印选项\n打印设置"
+    ID_FILE_PRINT           "打印活动文档\n打印"
+    ID_FILE_PRINT_DIRECT    "使用当前选项打印活动文档\n快速打印"
+    ID_FILE_PRINT_PREVIEW   "显示整页\n打印预览"
 END
 
 STRINGTABLE
 BEGIN
-    ID_APP_ABOUT            "��ʾ������Ϣ���汾�źͰ�Ȩ��Ϣ\n����"
-    ID_APP_EXIT             "�˳�Ӧ�ó�����ʾ�����ĵ�\n�˳�"
+    ID_APP_ABOUT            "显示程序信息、版本号和版权信息\n关于"
+    ID_APP_EXIT             "退出应用程序；提示保存文档\n退出"
 END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_MRU_FILE1       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE2       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE3       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE4       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE5       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE6       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE7       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE8       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE9       "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE10      "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE11      "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE12      "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE13      "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE14      "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE15      "�򿪴��ĵ�"
-    ID_FILE_MRU_FILE16      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE1       "打开此文档"
+    ID_FILE_MRU_FILE2       "打开此文档"
+    ID_FILE_MRU_FILE3       "打开此文档"
+    ID_FILE_MRU_FILE4       "打开此文档"
+    ID_FILE_MRU_FILE5       "打开此文档"
+    ID_FILE_MRU_FILE6       "打开此文档"
+    ID_FILE_MRU_FILE7       "打开此文档"
+    ID_FILE_MRU_FILE8       "打开此文档"
+    ID_FILE_MRU_FILE9       "打开此文档"
+    ID_FILE_MRU_FILE10      "打开此文档"
+    ID_FILE_MRU_FILE11      "打开此文档"
+    ID_FILE_MRU_FILE12      "打开此文档"
+    ID_FILE_MRU_FILE13      "打开此文档"
+    ID_FILE_MRU_FILE14      "打开此文档"
+    ID_FILE_MRU_FILE15      "打开此文档"
+    ID_FILE_MRU_FILE16      "打开此文档"
 END
 
 STRINGTABLE
 BEGIN
-    ID_NEXT_PANE            "�л�����һ������\n��һ����"
-    ID_PREV_PANE            "�л�����һ������\n��һ����"
+    ID_NEXT_PANE            "切换到下一个窗格\n下一窗格"
+    ID_PREV_PANE            "切换回上一个窗格\n上一窗格"
 END
 
 STRINGTABLE
 BEGIN
-    ID_WINDOW_SPLIT         "������ڲ��Ϊ�������\n���"
+    ID_WINDOW_SPLIT         "将活动窗口拆分为多个窗格\n拆分"
 END
 
 STRINGTABLE
 BEGIN
-    ID_EDIT_CLEAR           "�����ѡ����\n���"
-    ID_EDIT_CLEAR_ALL       "���ȫ������\nȫ�����"
-    ID_EDIT_COPY            "������ѡ���ݣ�������������\n����"
-    ID_EDIT_CUT             "������ѡ���ݣ�������������\n����"
-    ID_EDIT_FIND            "����ָ�����ı�\n����"
-    ID_EDIT_PASTE           "�������������\nճ��"
-    ID_EDIT_REPEAT          "�ظ���һ����\n�ظ�"
-    ID_EDIT_REPLACE         "�������ı��滻�ض����ı�\n�滻"
-    ID_EDIT_SELECT_ALL      "ѡ�������ĵ�\nȫѡ"
-    ID_EDIT_UNDO            "������һ����\n����"
-    ID_EDIT_REDO            "�����ϴγ����Ĳ���\n����"
+    ID_EDIT_CLEAR           "清除所选内容\n清除"
+    ID_EDIT_CLEAR_ALL       "清除全部内容\n全部清除"
+    ID_EDIT_COPY            "复制所选内容，将其放入剪贴板\n复制"
+    ID_EDIT_CUT             "剪切所选内容，将其放入剪贴板\n剪切"
+    ID_EDIT_FIND            "查找指定的文本\n查找"
+    ID_EDIT_PASTE           "插入剪贴板内容\n粘贴"
+    ID_EDIT_REPEAT          "重复上一操作\n重复"
+    ID_EDIT_REPLACE         "用其他文本替换特定的文本\n替换"
+    ID_EDIT_SELECT_ALL      "选定整个文档\n全选"
+    ID_EDIT_UNDO            "撤消上一操作\n撤消"
+    ID_EDIT_REDO            "重做上次撤消的操作\n重做"
 END
 
 STRINGTABLE
 BEGIN
-    ID_VIEW_TOOLBAR         "��ʾ�����ع�����\n�л�������"
-    ID_VIEW_STATUS_BAR      "��ʾ������״̬��\n�л�״̬��"
+    ID_VIEW_TOOLBAR         "显示或隐藏工具栏\n切换工具栏"
+    ID_VIEW_STATUS_BAR      "显示或隐藏状态栏\n切换状态栏"
 END
 
 STRINGTABLE
 BEGIN
-    AFX_IDS_SCSIZE          "���Ĵ��ڴ�С"
-    AFX_IDS_SCMOVE          "���Ĵ���λ��"
-    AFX_IDS_SCMINIMIZE      "��������С��ͼ��"
-    AFX_IDS_SCMAXIMIZE      "�����ڷŴ����ߴ�"
-    AFX_IDS_SCNEXTWINDOW    "�л�����һ���ĵ�����"
-    AFX_IDS_SCPREVWINDOW    "�л�����һ���ĵ�����"
-    AFX_IDS_SCCLOSE         "�رջ���ڲ���ʾ�����ĵ�"
+    AFX_IDS_SCSIZE          "更改窗口大小"
+    AFX_IDS_SCMOVE          "更改窗口位置"
+    AFX_IDS_SCMINIMIZE      "将窗口缩小成图标"
+    AFX_IDS_SCMAXIMIZE      "将窗口放大到最大尺寸"
+    AFX_IDS_SCNEXTWINDOW    "切换到下一个文档窗口"
+    AFX_IDS_SCPREVWINDOW    "切换到上一个文档窗口"
+    AFX_IDS_SCCLOSE         "关闭活动窗口并提示保存文档"
 END
 
 STRINGTABLE
 BEGIN
-    AFX_IDS_SCRESTORE       "�����ڻָ���������С"
-    AFX_IDS_SCTASKLIST      "���������б�"
+    AFX_IDS_SCRESTORE       "将窗口恢复到正常大小"
+    AFX_IDS_SCTASKLIST      "激活任务列表"
 END
 
 STRINGTABLE
 BEGIN
-    AFX_IDS_PREVIEW_CLOSE   "�رմ�ӡԤ��ģʽ\nȡ��Ԥ��"
+    AFX_IDS_PREVIEW_CLOSE   "关闭打印预览模式\n取消预览"
 END
 
 STRINGTABLE
 BEGIN
-    ID_MENU_DRAW_LINE       "����ֱ��\nֱ��"
-    ID_MENU_DRAW_RECT       "���ƾ���\n����"
-    ID_MENU_DRAW_ELLI       "������Բ\n��Բ"
+    ID_MENU_DRAW_LINE       "绘制直线\n直线"
+    ID_MENU_DRAW_RECT       "绘制矩形\n矩形"
+    ID_MENU_DRAW_ELLI       "绘制椭圆\n椭圆"
 END
 
 STRINGTABLE
 BEGIN
-    ID_MENU_DRAW_CLEAR      "����\n����"
+    ID_MENU_DRAW_CLEAR      "清屏\n清屏"
 END
 
 STRINGTABLE
 BEGIN
-    ID_MENU_LINE_COLOR      "����������ɫ\n������ɫ"
-    ID_MENU_LINE_SOLID      "������ʽ��ʵ��\nʵ��"
-    ID_MENU_LINE_DASH       "������ʽ������\n����"
-    ID_MENU_LINE_DOT        "������ʽ������\n����"
-    ID_MENU_LINE_DASHDOT    "������ʽ�������\n�����"
-    ID_MENU_LINE_DASHDOTDOT "������ʽ��������\n������"
-    ID_MENU_LINE_NULL       "������ʽ���ձ�\n�ձ�"
-    ID_MENU_BRUSH_COLOR     "���ñ�ˢ��ɫ\n��ˢ��ɫ"
-    ID_MENU_BRUSH_TRANSPARENT "���ñ�ˢΪ͸��\n͸��"
+    ID_MENU_LINE_COLOR      "设置线条颜色\n线条颜色"
+    ID_MENU_LINE_SOLID      "线条样式：实心\n实心"
+    ID_MENU_LINE_DASH       "线条样式：虚线\n虚线"
+    ID_MENU_LINE_DOT        "线条样式：点线\n点线"
+    ID_MENU_LINE_DASHDOT    "线条样式：虚点线\n虚点线"
+    ID_MENU_LINE_DASHDOTDOT "线条样式：虚点点线\n虚点点线"
+    ID_MENU_LINE_NULL       "线条样式：空笔\n空笔"
+    ID_MENU_BRUSH_COLOR     "设置笔刷颜色\n笔刷颜色"
+    ID_MENU_BRUSH_TRANSPARENT "设置笔刷为透明\n透明"
 END
 
 STRINGTABLE
 BEGIN
-    ID_MENU_LINE_WIDTH      "������������\n��������"
-    ID_LINE_PEN             "Ǧ�ʣ���ѡ�����߿���һ�����������\nǦ��"
+    ID_MENU_LINE_WIDTH      "设置线条宽度\n线条宽度"
+    ID_LINE_PEN             "铅笔：用选定的线宽画一个任意的线条\n铅笔"
+    ID_BGM_PLAY             "bgm播放\nbgm播放"
 END
 
 STRINGTABLE
 BEGIN
-    ID_MENU_BRUSH_HORIZONTAL "��ˢ��ʽ��ˮƽ��\nˮƽ��"
-    ID_MENU_BRUSH_VERTICAL  "��ˢ��ʽ����ֱ��\n��ֱ��"
-    ID_MENU_BRUSH_FDIAGONAL "��ˢ��ʽ����б��\n��б��"
-    ID_MENU_BRUSH_FILL      "��ˢ��ʽ�����\n���"
-    ID_MENU_BRUSH_BDIAGONAL "��ˢ��ʽ����б��\n��б��"
-    ID_MENU_BRUSH_CROSS     "��ˢ��ʽ��ʮ����\nʮ����"
-    ID_MENU_BRUSH_DIAGCROSS "��ˢ��ʽ��бʮ����\nбʮ����"
+    ID_MENU_BRUSH_HORIZONTAL "笔刷样式：水平线\n水平线"
+    ID_MENU_BRUSH_VERTICAL  "笔刷样式：垂直线\n垂直线"
+    ID_MENU_BRUSH_FDIAGONAL "笔刷样式：正斜线\n正斜线"
+    ID_MENU_BRUSH_FILL      "笔刷样式：填充\n填充"
+    ID_MENU_BRUSH_BDIAGONAL "笔刷样式：反斜线\n反斜线"
+    ID_MENU_BRUSH_CROSS     "笔刷样式：十字线\n十字线"
+    ID_MENU_BRUSH_DIAGCROSS "笔刷样式：斜十字线\n斜十字线"
 END
 
-#endif    // Chinese (Simplified, PRC) resources
-/////////////////////////////////////////////////////////////////////////////
+STRINGTABLE
+BEGIN
+    ID_CLIENT_SAVE          "储存画图\n存储画图"
+    ID_BACK_CLEAR           "清楚底图\n清除底图"
+END
+
+#endif    // 中文(简体，中国) resources
 
 
 
@@ -600,9 +617,9 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE 4, 2
-#include "res\MFCDraw.rc2"  // �� Microsoft Visual C++ �༭����Դ
-#include "l.CHS\afxres.rc"      // ��׼���
-#include "l.CHS\afxprint.rc"    // ��ӡ/��ӡԤ����Դ
+#include "res\MFCDraw.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "l.CHS\afxres.rc"      // 标准组件
+#include "l.CHS\afxprint.rc"    // 打印/打印预览资源
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
