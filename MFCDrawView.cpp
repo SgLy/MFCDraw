@@ -13,6 +13,9 @@
 #include "MFCDrawDoc.h"
 #include "MFCDrawView.h"
 
+#include "ModeDlg.h"
+#include "WaitDlg.h"
+#include "RoomListDlg.h"
 #include "PenWidthDlg.h"
 
 #include "Socket.h"
@@ -81,8 +84,6 @@ BEGIN_MESSAGE_MAP(CMFCDrawView, CView)
 	ON_COMMAND(ID_MENU_LINE_WIDTH, &CMFCDrawView::OnMenuPenWidth)
 	ON_COMMAND(ID_LINE_PEN, &CMFCDrawView::OnLinePen)
 	ON_UPDATE_COMMAND_UI(ID_LINE_PEN, &CMFCDrawView::OnUpdateLinePen)
-	ON_COMMAND(ID_MENU_NET_SERVER, &CMFCDrawView::OnMenuNetServer)
-	ON_COMMAND(ID_MENU_NET_CLIENT, &CMFCDrawView::OnMenuNetClient)
 	ON_COMMAND(ID_EDIT_UNDO, &CMFCDrawView::OnEditUndo)
 	ON_COMMAND(ID_BGM_PLAY, &CMFCDrawView::OnBgmPlay)
 	ON_UPDATE_COMMAND_UI(ID_BGM_PLAY, &CMFCDrawView::OnUpdateBgmPlay)
@@ -93,7 +94,10 @@ END_MESSAGE_MAP()
 
 #define HS_FILL 6
 
-Socket * sock, * s_list_sock;
+Socket * c_sock, * s_sock;
+CListBox * room_list;
+CWaitDlg * wait_dlg;
+CString self_ip;
 
 CMFCDrawView::CMFCDrawView()
 {
@@ -115,10 +119,85 @@ CMFCDrawView::CMFCDrawView()
 
 	m_bPlay = false;
 	m_bOnOff = false;
+
+	s_sock = new Socket(this);
+	if (!s_sock->Create(64190, SOCK_DGRAM))
+		s_sock->error(s_sock->GetLastError());
+	s_sock->Listen();
+
+	c_sock = new Socket(this);
+	if (!c_sock->Create(0, SOCK_DGRAM))
+		s_sock->error(s_sock->GetLastError());
+	// c_sock->Connect(L"localhost", 64190);
+
+	BOOL tmp = true;
+	c_sock->SetSockOpt(SO_BROADCAST, &tmp, sizeof(tmp));
+
+	ip = L"localhost";
+
+	switch (CModeDlg().DoModal()) {
+	case 3: {
+		// New room
+		state = STATE_SERVER;
+
+		packet.type = PACK_CTRL;
+		packet.ctrl = CTRL_NEW;
+		if (0 != c_sock->SendTo(&packet, sizeof(packet), 64190, L"255.255.255.255", 0))
+			c_sock->error(c_sock->GetLastError());
+
+		UINT tmp;
+		c_sock->GetSockName(self_ip, tmp);
+
+		wait_dlg = new CWaitDlg();
+		wait_dlg->prompt = L"正在等待一个客户端加入连接……（本机IP: " + self_ip + L"）";
+		if (wait_dlg->DoModal() == IDOK) {
+			state = STATE_PLAY;
+		}
+		else {
+			packet.type = PACK_CTRL;
+			packet.ctrl = CTRL_DEL;
+			if (0 != c_sock->SendTo(&packet, sizeof(packet), 64190, L"255.255.255.255", 0))
+				c_sock->error(c_sock->GetLastError());
+			PostQuitMessage(0);
+		}
+		delete wait_dlg;
+		break;
+	}
+	case 4: {
+		// Room list
+		state = STATE_CLIENT;
+
+		CRoomListDlg room_list_dlg;
+		room_list = &room_list_dlg.room_list;
+
+		packet.type = PACK_CTRL;
+		packet.ctrl = CTRL_LIST;
+		if (0 != c_sock->SendTo(&packet, sizeof(packet), 64190, L"255.255.255.255", 0))
+			c_sock->error(c_sock->GetLastError());
+
+		if (room_list_dlg.DoModal() == IDOK) {
+			ip = room_list_dlg.selected_ip;
+
+			packet.type = PACK_CTRL;
+			packet.ctrl = CTRL_JOIN;
+			if (0 != c_sock->SendTo(&packet, sizeof(packet), 64190, ip, 0))
+				c_sock->error(c_sock->GetLastError());
+
+			state = STATE_PLAY;
+		}
+		else
+			PostQuitMessage(0);
+		break;
+	}
+	default:
+		PostQuitMessage(0);
+	}
 }
 
 CMFCDrawView::~CMFCDrawView()
 {
+	delete s_sock;
+	delete c_sock;
 }
 
 BOOL CMFCDrawView::PreCreateWindow(CREATESTRUCT& cs)
@@ -189,12 +268,16 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 {
 	option_t op = option;
 	if (DRAW_SEND == net) {
-		if (sock)
-			sock->Send(&option, sizeof(option), 0);
+		if (c_sock) {
+			packet.opt = option;
+			packet.type = PACK_DRAW;
+			c_sock->SendTo(&packet, sizeof(packet), 64190, ip, 0);
+		}
 	}
 	else if (DRAW_RECV == net) {
-		if (sock)
-			sock->Receive(&op, sizeof(op), 0);
+		if (s_sock) {
+			op = packet.opt;
+		}
 	}
 
 	if (DRAW_COPY == mode) {
@@ -251,7 +334,52 @@ void CMFCDrawView::Draw(draw_mode_t mode, draw_net_t net)
 }
 
 void CMFCDrawView::OnReceive() {
-	Draw(DRAW_COPY, DRAW_RECV);
+	CString src_ip;
+	UINT src_port;
+	s_sock->ReceiveFrom(&packet, sizeof(packet), src_ip, src_port);
+	if (packet.type == PACK_DRAW)
+		Draw(DRAW_COPY, DRAW_RECV);
+	else if (packet.type == PACK_CTRL) {
+		switch (packet.ctrl) {
+			case CTRL_LIST: {
+				if (state != STATE_SERVER)
+					break;
+				
+				packet.type = PACK_CTRL;
+				packet.ctrl = CTRL_NEW;
+				if (0 != c_sock->SendTo(&packet, sizeof(packet), 64190, src_ip, 0))
+					c_sock->error(c_sock->GetLastError());
+
+				break;
+			}
+			case CTRL_NEW: {
+				if (state != STATE_CLIENT)
+					break;
+				if (!room_list)
+					break;
+				if (room_list->FindStringExact(-1, src_ip) == LB_ERR)
+					room_list->AddString(src_ip);
+				break;
+			}
+			case CTRL_DEL: {
+				if (state != STATE_CLIENT)
+					break;
+				if (!room_list)
+					break;
+				int id = room_list->FindStringExact(-1, src_ip);
+				if (id != LB_ERR)
+					room_list->DeleteString(id);
+				break;
+			}
+			case CTRL_JOIN: {
+				if (state != STATE_SERVER)
+					break;
+				ip = src_ip;
+				wait_dlg->EndDialog(IDOK);
+				break;
+			}
+		}
+	}
 }
 
 void CMFCDrawView::OnLButtonDown(UINT nFlags, CPoint point)
@@ -564,27 +692,6 @@ void CMFCDrawView::OnUpdateLinePen(CCmdUI *pCmdUI)
 	// TODO: 在此添加命令更新用户界面处理程序代码
 	pCmdUI->SetCheck(option.mode == DRAW_PEN);
 }
-
-void CMFCDrawView::OnMenuNetServer()
-{
-	s_list_sock = new Socket(this);
-	s_list_sock->Create(64190);
-	s_list_sock->Listen();
-}
-
-void CMFCDrawView::OnMenuNetClient()
-{
-	sock = new Socket(this);
-	sock->Create();
-	sock->Connect(L"localhost", 64190);
-}
-
-void CMFCDrawView::OnAccept()
-{
-	sock = new Socket(this);
-	s_list_sock->Accept(*sock);
-}
-
 
 void CMFCDrawView::OnEditUndo()
 {

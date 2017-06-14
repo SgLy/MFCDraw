@@ -14,9 +14,8 @@ private:
 	CMFCDrawView * father;
 public:
 	virtual void OnReceive(int nErrorCode);
-	virtual void OnAccept(int nErrorCode);
-	virtual void OnClose(int nErrorCode);
 	virtual void OnSend(int nErrorCode);
+	void error(int nErrorCode);
 };
 
 

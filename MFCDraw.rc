@@ -17,7 +17,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(简体，中国) resources
+// Chinese (Simplified, PRC) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -209,11 +209,6 @@ BEGIN
             MENUITEM "填充(&6)",                      ID_MENU_BRUSH_FILL
         END
     END
-    POPUP "网络(&N)"
-    BEGIN
-        MENUITEM "打开服务端(&S)",                   ID_MENU_NET_SERVER
-        MENUITEM "打开客户端(&C)",                   ID_MENU_NET_CLIENT
-    END
     POPUP "小功能(&F)"
     BEGIN
         MENUITEM "BGM(&P)",                     ID_BGM_PLAY
@@ -276,6 +271,33 @@ BEGIN
     LTEXT           "宽度",IDC_STATIC,6,6,17,8
     EDITTEXT        IDC_EDIT1,30,6,66,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_PEN_WIDTH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,96,6,12,14
+END
+
+IDD_DIALOG2 DIALOGEX 0, 0, 225, 61
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "选择联机模式"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "建立新的房间 (&N)",ID_NEW_ROOM,7,7,211,21
+    PUSHBUTTON      "查看房间列表 (&L)",ID_ROOM_LIST,7,33,211,21
+END
+
+IDD_DIALOG3 DIALOGEX 0, 0, 283, 191
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "选择一个房间进入……"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "进入房间 (&E)",IDOK,218,7,58,23
+    LISTBOX         IDC_ROOM_LIST,7,7,200,177,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALOG4 DIALOGEX 0, 0, 241, 45
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "等待连接……"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "取消 (&C)",IDCANCEL,6,24,228,14
+    LTEXT           "正在等待一个客户端加入连接……（本机IP:）",IDC_PROMPT_LABEL,7,7,227,8
 END
 
 
@@ -341,6 +363,30 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 38
     END
+
+    IDD_DIALOG2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 218
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 54
+    END
+
+    IDD_DIALOG3, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 276
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 184
+    END
+
+    IDD_DIALOG4, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 234
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -351,6 +397,21 @@ END
 //
 
 IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG2 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG3 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG4 AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -531,7 +592,7 @@ BEGIN
     ID_MENU_BRUSH_DIAGCROSS "笔刷样式：斜十字线\n斜十字线"
 END
 
-#endif    // 中文(简体，中国) resources
+#endif    // Chinese (Simplified, PRC) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
