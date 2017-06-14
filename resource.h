@@ -10,7 +10,6 @@
 #define IDB_BITMAP2                     312
 #define IDR_TOOLBAR1                    313
 #define IDD_DIALOG1                     315
-#define IDR_WOTW                        317
 #define IDD_DIALOG2                     318
 #define IDD_DIALOG3                     320
 #define IDD_DIALOG4                     322

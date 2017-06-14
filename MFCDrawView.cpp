@@ -713,7 +713,20 @@ void CMFCDrawView::OnBgmPlay()
 	// TODO: 在此添加命令处理程序代码
 	m_bOnOff = !m_bOnOff;
 	m_bPlay = !m_bPlay;
-	if (m_bOnOff) PlaySound((LPCTSTR)IDR_WOTW, AfxGetInstanceHandle(), SND_RESOURCE | SND_ASYNC | SND_LOOP);
+	if (m_bOnOff) {
+		std::vector<CString> paths {
+			L"bgm.wav",
+			L"res\\bgm.wav",
+			L"..\\res\\bgm.wav",
+			L"..\\..\\res\\bgm.wav"
+		};
+		DWORD flag = SND_FILENAME | SND_NODEFAULT | SND_ASYNC | SND_LOOP;
+		for (auto p : paths)
+			if (PathFileExists(p))
+				if (PlaySound(p, AfxGetInstanceHandle(), flag))
+					return;
+		AfxMessageBox(L"bgm.wav not found!");
+	}
 	else PlaySound(NULL, NULL, NULL);
 }
 
