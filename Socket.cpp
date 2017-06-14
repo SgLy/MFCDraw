@@ -20,12 +20,10 @@ Socket::~Socket()
 
 // Socket member functions
 
-void Socket::OnConnect(int nErrorCode)
+void Socket::error(int nErrorCode)
 {
-	if (0 != nErrorCode)
-	{
-		switch (nErrorCode)
-		{
+	if (0 != nErrorCode) {
+	switch (nErrorCode)	{
 		case WSAEADDRINUSE:
 			AfxMessageBox(_T("The specified address is already in use.\n"));
 			break;
@@ -73,14 +71,21 @@ void Socket::OnConnect(int nErrorCode)
 			AfxMessageBox(_T("The attempt to connect timed out without ")
 				_T("establishing a connection. \n"));
 			break;
+		case WSAEACCES:
+			AfxMessageBox(_T("Permission denied.\n"));
+			break;
 		default:
 			TCHAR szError[256];
-			_stprintf_s(szError, _T("OnConnect error: %d"), nErrorCode);
+			_stprintf_s(szError, _T("Socket error: %d"), nErrorCode);
 			AfxMessageBox(szError);
 			break;
 		}
-		AfxMessageBox(_T("Please close the application"));
 	}
+}
+
+void Socket::OnConnect(int nErrorCode)
+{
+	error(nErrorCode);
 	CAsyncSocket::OnConnect(nErrorCode);
 }
 
@@ -88,34 +93,15 @@ void Socket::OnConnect(int nErrorCode)
 
 void Socket::OnReceive(int nErrorCode)
 {
-	// TODO: Add your specialized code here and/or call the base class
+	error(nErrorCode);
 	if (nErrorCode == 0) // 无错误，调用对话框的OnReceive函数
 		father->OnReceive();
 	CAsyncSocket::OnReceive(nErrorCode);
 }
 
 
-void Socket::OnAccept(int nErrorCode)
-{
-	// TODO: Add your specialized code here and/or call the base class
-	if (nErrorCode == 0)
-		father->OnAccept();
-	CAsyncSocket::OnAccept(nErrorCode);
-}
-
-
-
-void Socket::OnClose(int nErrorCode)
-{
-	// TODO: Add your specialized code here and/or call the base class
-	// AfxMessageBox(L"close");
-	CAsyncSocket::OnClose(nErrorCode);
-}
-
-
 void Socket::OnSend(int nErrorCode)
 {
-	// TODO: Add your specialized code here and/or call the base class
-	// AfxMessageBox(L"send");
+	error(nErrorCode);
 	CAsyncSocket::OnSend(nErrorCode);
 }

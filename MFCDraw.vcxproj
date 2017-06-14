@@ -181,22 +181,27 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ModeDlg.h" />
     <ClInclude Include="PenWidthDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MFCDraw.h" />
     <ClInclude Include="MFCDrawDoc.h" />
     <ClInclude Include="MFCDrawView.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="RoomListDlg.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="WaitDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ModeDlg.cpp" />
     <ClCompile Include="PenWidthDlg.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MFCDraw.cpp" />
     <ClCompile Include="MFCDrawDoc.cpp" />
     <ClCompile Include="MFCDrawView.cpp" />
+    <ClCompile Include="RoomListDlg.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -204,6 +209,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="WaitDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCDraw.rc" />

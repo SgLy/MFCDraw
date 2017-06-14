@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 MFCDraw.rc 使用
+// Microsoft Visual C++ generated include file.
+// Used by MFCDraw.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
@@ -10,10 +10,16 @@
 #define IDB_BITMAP2                     312
 #define IDR_TOOLBAR1                    313
 #define IDD_DIALOG1                     315
-#define IDR_WOTW                        317
+#define IDD_DIALOG2                     318
+#define IDD_DIALOG3                     320
+#define IDD_DIALOG4                     322
 #define IDC_EDIT1                       1000
 #define IDC_SPIN1                       1001
 #define IDC_PEN_WIDTH_SPIN              1001
+#define IDC_ROOM_LIST                   1002
+#define IDC_PROMPT_LABEL                1003
+#define ID_NEW_ROOM                     1004
+#define ID_ROOM_LIST                    1005
 #define ID_MENU_DRAW_LINE               32780
 #define ID_MENU_DRAW_RECT               32781
 #define ID_MENU_DRAW_ELLI               32782
@@ -30,8 +36,6 @@
 #define ID_MENU_BRUSH_TRANSPARENT       32795
 #define ID_32796                        32796
 #define ID_32797                        32797
-#define ID_BUTTON32801                  32801
-#define ID_BUTTON32802                  32802
 #define ID_BUTTON32812                  32812
 #define ID_MENU_BRUSH_ELLI              32813
 #define ID_32814                        32814
@@ -73,14 +77,16 @@
 #define ID_BUTTON32805                  33805
 #define ID_BUTTON32806                  33806
 #define ID_BUTTON32807                  33807
+#define ID_BUTTON32801                  32808
+#define ID_BUTTON32802                  32809
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        318
+#define _APS_NEXT_RESOURCE_VALUE        324
 #define _APS_NEXT_COMMAND_VALUE         32858
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

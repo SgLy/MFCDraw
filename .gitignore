@@ -10,6 +10,9 @@ x64
 *.filters
 *.txt
 
+## Suond files
+*.wav
+
 
 # Prerequisites
 *.d

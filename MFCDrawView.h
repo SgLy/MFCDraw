@@ -4,16 +4,14 @@
 #pragma once
 
 #include <vector>
+#include <set>
 
-enum mode_t {
-	DRAW_LINE,
-	DRAW_RECT,
-	DRAW_ELLI,
-	DRAW_PEN
-};
-
+enum mode_t { DRAW_LINE, DRAW_RECT, DRAW_ELLI, DRAW_PEN };
 enum draw_mode_t { DRAW_XOR, DRAW_COPY };
 enum draw_net_t { DRAW_SEND, DRAW_RECV, DRAW_NULL };
+enum packet_type_t { PACK_DRAW, PACK_CTRL };
+enum control_t { CTRL_LIST, CTRL_NEW, CTRL_DEL, CTRL_JOIN };
+enum state_t { STATE_SERVER, STATE_CLIENT, STATE_PLAY };
 
 struct option_t {
 	mode_t mode;
@@ -23,6 +21,12 @@ struct option_t {
 	int penWidth, solidPenWidth, penStyle;
 	COLORREF brushCol;
 	int brushStyle;
+};
+
+struct packet_t {
+	packet_type_t type;
+	option_t opt;
+	control_t ctrl;
 };
 
 class CMFCDrawView : public CView
@@ -39,7 +43,6 @@ public:
 public:
 	void Draw(draw_mode_t mode, draw_net_t net);
 	void OnReceive();
-	void OnAccept();
 	bool m_bPlay;    //控制菜单项UI更新
 	bool m_bOnOff;    //控制音乐播放
 	CImage img;
@@ -78,6 +81,9 @@ public:
 
 public:
 	option_t option;
+	packet_t packet;
+	state_t state;
+	CString ip;
 	bool isButtonDown;
 	CPen * p0, *p1;
 	CBrush * b0;
@@ -124,8 +130,6 @@ public:
 	afx_msg void OnMenuPenWidth();
 	afx_msg void OnLinePen();
 	afx_msg void OnUpdateLinePen(CCmdUI *pCmdUI);
-	afx_msg void OnMenuNetServer();
-	afx_msg void OnMenuNetClient();
 	afx_msg void OnEditUndo();
 	afx_msg void OnBgmPlay();
 	afx_msg void OnUpdateBgmPlay(CCmdUI *pCmdUI);
