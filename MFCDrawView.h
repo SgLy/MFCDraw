@@ -42,6 +42,8 @@ public:
 	// 操作
 public:
 	void Draw(draw_mode_t mode, draw_net_t net);
+	CBitmap * screenToBitmap();
+	void bitmapToScreen(CBitmap * bmp);
 	void OnReceive();
 	bool m_bPlay;    //控制菜单项UI更新
 	bool m_bOnOff;    //控制音乐播放
@@ -87,7 +89,7 @@ public:
 	bool isButtonDown;
 	CPen * p0, *p1;
 	CBrush * b0;
-	std::vector<option_t> history;
+	std::vector<CBitmap *> history;
 
 public:
 	afx_msg void OnMenuDrawLine();
