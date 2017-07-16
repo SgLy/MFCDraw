@@ -30,6 +30,7 @@ void CModeDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CModeDlg, CDialog)
 	ON_BN_CLICKED(ID_NEW_ROOM, &CModeDlg::OnBnClickedNewRoom)
 	ON_BN_CLICKED(ID_ROOM_LIST, &CModeDlg::OnBnClickedRoomList)
+	ON_BN_CLICKED(ID_ROOM_OFF, &CModeDlg::OnBnClickedRoomOff)
 END_MESSAGE_MAP()
 
 
@@ -45,4 +46,10 @@ void CModeDlg::OnBnClickedNewRoom()
 void CModeDlg::OnBnClickedRoomList()
 {
 	EndDialog(4);
+}
+
+
+void CModeDlg::OnBnClickedRoomOff()
+{
+	EndDialog(5);
 }

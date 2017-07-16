@@ -23,4 +23,5 @@ protected:
 public:
 	afx_msg void OnBnClickedNewRoom();
 	afx_msg void OnBnClickedRoomList();
+	afx_msg void OnBnClickedRoomOff();
 };
